@@ -209,6 +209,7 @@ class ofApp : public ofBaseApp{
     void drawContourAnalyzer();
     void drawMeshBuilderWireframe();
     void drawGradientOverlay();
+    void drawIdleContour();
     void huntForBlendFunc (int period, int defaultSid, int defaultDid);
     bool useCorrectedCam();
 	
@@ -256,6 +257,7 @@ class ofApp : public ofBaseApp{
 	bool bDrawImageInBackground;
     bool bDrawGradient;
     bool bKioskMode;
+    bool bInIdleMode;
     
 	ofxCvColorImage colorVideo;
 	ofxCvColorImage colorVideoHalfScale;

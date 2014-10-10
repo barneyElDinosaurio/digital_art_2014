@@ -142,7 +142,8 @@ void ofApp::setup(){
 	bComputePixelBasedFrameDifferencing = false;
 	bDoCompositeThresholdedImageWithLeapFboPixels = false;
 	bDrawGradient               = true;
-	bKioskMode                  = false;
+	bKioskMode                  = true;
+    bInIdleMode                 = true;
 	bUseBothTypesOfScenes		= true;
 	
 	//--------------- Setup LEAP
@@ -646,15 +647,17 @@ void ofApp::update(){
         bInPlaybackMode = true;
         playing = true;
         myPuppetManager.bInIdleMode = true;
-        
+        bInIdleMode = true;
+        // cout << "leap hands" << leap.getLeapHands().size() << endl;
+        //cout << "IDLE MODE ON" << endl;
         // set puppet darw mode and alpha
     }else if( leap.getLeapHands().size() > 0 && bInPlaybackMode){
         bInPlaybackMode = false;
         myPuppetManager.bInIdleMode = false;
+        bInIdleMode = false;
 
     }
     
-    // cout << "leap hands" << leap.getLeapHands().size() << endl;
 }
 
 
@@ -1352,18 +1355,7 @@ void ofApp::draw(){
             }
         }
     }
-    if (bDrawMeshBuilderWireframe){
-        drawMeshBuilderWireframe();
-    }
-    if (bShowText){
-		drawText();
-    }
-    if (bDrawMiniImages) {
-        drawDiagnosticMiniImages();
-    }
-    if (bDrawContourAnalyzer){
-        drawContourAnalyzer();
-    }
+
     
     
 
@@ -1380,6 +1372,12 @@ void ofApp::draw(){
 		bool bMeshesAreProbablyOK = (appFaultManager.doCurrentFaultsIndicateLikelihoodOfBadMeshes() == false);
 	
         bEverythingIsAwesome = bCalculatedMesh && bMeshesAreProbablyOK;
+        
+        // quick hack so live video does not show in idle mode
+        if( bKioskMode && bInIdleMode){
+            bEverythingIsAwesome = false;
+        }
+    
         if (bEverythingIsAwesome){
             
             // ALL GOOD! SHOW THE PUPPET!
@@ -1387,13 +1385,13 @@ void ofApp::draw(){
 			// Before we show the puppet, however, show an image in the background if desired.
 			if (bDrawImageInBackground){
 				ofPushMatrix();
-				float bgScale = puppetDisplayScale * 1.0;
-				float ox = ofGetWindowWidth()      - cameraWidth*bgScale;
-				float oy = ofGetWindowHeight()/2.0 - cameraHeight*bgScale/2.0;
-				ofTranslate( ox, oy, 0);
-				ofScale (bgScale, bgScale);
-				ofSetColor(255,255,255);
-				backgroundImage.draw(0,0, 1024,768);
+                    float bgScale = puppetDisplayScale * 1.0;
+                    float ox = ofGetWindowWidth()      - cameraWidth*bgScale;
+                    float oy = ofGetWindowHeight()/2.0 - cameraHeight*bgScale/2.0;
+                    ofTranslate( ox, oy, 0);
+                    ofScale (bgScale, bgScale);
+                    ofSetColor(255,255,255);
+                    backgroundImage.draw(0,0, 1024,768);
 				ofPopMatrix();
 			}
 			
@@ -1415,10 +1413,10 @@ void ofApp::draw(){
 				// mix topo and regular.
 				if (currentSceneID < 2){
 					useTopologyModifierManager = true;
-					myTopologyModifierManager.draw (handImageTexture);
+					myTopologyModifierManager.draw(handImageTexture);
 				} else {
 					useTopologyModifierManager = false;
-					myPuppetManager.drawPuppet (bComputeAndDisplayPuppet, handImageTexture);
+					myPuppetManager.drawPuppet(bComputeAndDisplayPuppet, handImageTexture);
 				}
 				
 			} else {
@@ -1430,11 +1428,7 @@ void ofApp::draw(){
 					myPuppetManager.drawPuppet (bComputeAndDisplayPuppet, handImageTexture);
 				}
 			}
-			
 
-            
-			
-        
         } else {
             
             // THE PUPPET IS FAULTY :(
@@ -1446,16 +1440,23 @@ void ofApp::draw(){
 				// We show it at full (1024x768) resolution, and we include its own natural background.
 				// Note: the image needs to be scaled by puppetscale, or else there is scale-flipping.
 				//
-				ofPushMatrix();
-				float bgScale = puppetDisplayScale * 1.0;
-				float ox = ofGetWindowWidth()      - cameraWidth*bgScale;
-				float oy = ofGetWindowHeight()/2.0 - cameraHeight*bgScale/2.0;
-				ofTranslate( ox, oy, 0);
-				ofScale (bgScale, bgScale);
-				ofSetColor(255,255,255);
-				colorVideo.draw(0,0, 1024,768);
-				ofPopMatrix();
 				
+                if(bInIdleMode && bKioskMode){
+                    drawIdleContour();
+                }else{
+                    ofPushMatrix();
+                    float bgScale = puppetDisplayScale * 1.0;
+                    float ox = ofGetWindowWidth()      - cameraWidth*bgScale;
+                    float oy = ofGetWindowHeight()/2.0 - cameraHeight*bgScale/2.0;
+                    ofTranslate( ox, oy, 0);
+                    ofScale (bgScale, bgScale);
+                    ofSetColor(255,255,255);
+                    colorVideo.draw(0,0, 1024,768);
+                    ofPopMatrix();
+                    
+                }
+                
+                
 			} else {
 				
 				// We're not drawing an image in the background;
@@ -1491,6 +1492,19 @@ void ofApp::draw(){
  
 	}
 
+    // Diagnostics
+    if (bDrawMeshBuilderWireframe){
+        drawMeshBuilderWireframe();
+    }
+    if (bShowText){
+		drawText();
+    }
+    if (bDrawMiniImages) {
+        drawDiagnosticMiniImages();
+    }
+    if (bDrawContourAnalyzer){
+        drawContourAnalyzer();
+    }
     
     //-----------------------------------
     // 3. DISPLAY FEEDBACK TO USER:
@@ -2099,6 +2113,28 @@ void ofApp::drawGradientOverlay(){
     
 }
 
+void ofApp::drawIdleContour(){
+    
+    // get contours from handContourAnalyzer
+    ofPushStyle();
+    
+    ofSetColor(255,255,255);
+    backgroundImage.draw(0,0, 1024,768);
+
+    ofSetLineWidth(4);
+    ofSetColor(25,200,255,200);
+    ofPolyline smoothContour = myHandContourAnalyzer.theHandContourVerySmooth;
+    ofPushMatrix();
+        ofTranslate(20,-80,0);
+        ofScale(2.5,2.5,1);
+//        for(int i = 0; i < smoothContour.size();i+=2){
+//            ofEllipse(smoothContour[i].x,smoothContour[i].y,2,2);
+//        }
+        smoothContour.draw();
+    ofPopMatrix();
+    ofPopStyle();
+}
+
 //--------------------------------------------------------------
 void ofApp::loadPlaybackFromDialogForCalibration(){
     
@@ -2339,7 +2375,10 @@ void ofApp::keyPressed(int key){
 			break;
       case 'k':
             bKioskMode = !bKioskMode;
-            if(!bKioskMode) myPuppetManager.bInIdleMode = false;
+            if(!bKioskMode){
+                myPuppetManager.bInIdleMode = false;
+                bInIdleMode = false;
+            }
             break;
             
     }
