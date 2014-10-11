@@ -145,6 +145,7 @@ void ofApp::setup(){
 	bKioskMode                  = true;
     bInIdleMode                 = true;
 	bUseBothTypesOfScenes		= true;
+	bDataSampleGrabbingEnabled	= true;
 	
 	//--------------- Setup LEAP
 	leap.open();
@@ -194,6 +195,10 @@ void ofApp::setup(){
 	prevGradientThreshPow		= 1.0;
 	skinColorPatchSize			= 64;
 	averageSkinLuminance		= 0;
+	
+	dataSampleGrabIntervalMillis = 20000;
+	lastDataSampleGrabTimeMillis = 0;
+	dataSampleImg.allocate(cameraWidth, cameraHeight, OF_IMAGE_COLOR);
 	
 	
 	skinColorPatch.create (skinColorPatchSize, skinColorPatchSize, CV_8UC1);
@@ -302,8 +307,8 @@ void ofApp::setup(){
     // APPLICATION FAULT MANAGER
     appFaultManager.setup();
     minHandInsertionPercent = 0.29;
-    maxAllowableMotion		= 15.0;
-    maxAllowableFingerCurl	= 0.3;
+    maxAllowableMotion		= 15.5;
+    maxAllowableFingerCurl	= 0.31;
     maxAllowableExtentZ		= 0.5;
     maxAllowableHeightZ     = 1.75;
 	
@@ -408,6 +413,7 @@ void ofApp::setupGui() {
     gui0->addIntSlider("playingFrame", 0, 1000,         &playingFrame);
     gui0->addLabelToggle("Fullscreen",					&bFullscreen);
     gui0->addLabelToggle("Do Puppet",					&bComputeAndDisplayPuppet);
+	gui0->addLabelToggle("bDataSampleGrabbingEnabled",	&bDataSampleGrabbingEnabled);
     
     // Display of time consumption for puppeteering.
     gui0->addSpacer();
@@ -544,6 +550,7 @@ void ofApp::setupGui() {
     vnames.push_back("grayMat");
     vnames.push_back("thresholded");
     vnames.push_back("gradientThreshImg");
+	vnames.push_back("leapArmPixelsOnlyMat");
     vnames.push_back("thresholdedFinal");
     vnames.push_back("leapDiagnosticFboMat");
     vnames.push_back("edgeMat");
@@ -624,11 +631,11 @@ void ofApp::update(){
 				useTopologyModifierManager = true;
 				myTopologyModifierManager.update (myHandMeshBuilder);
 				myPuppetManager.updatePuppeteerDummy();
-				myHandMeshBuilder.nTolerableTriangleIntersections = 20;
+				//myHandMeshBuilder.nTolerableTriangleIntersections = 20;
 			} else {
 				useTopologyModifierManager = false;
 				myPuppetManager.updatePuppeteer (bComputeAndDisplayPuppet, myHandMeshBuilder);
-				myHandMeshBuilder.nTolerableTriangleIntersections = 500;
+				//myHandMeshBuilder.nTolerableTriangleIntersections = 500;
 			}
 			
 		} else {
@@ -1441,20 +1448,35 @@ void ofApp::draw(){
 				// Note: the image needs to be scaled by puppetscale, or else there is scale-flipping.
 				//
 				
-                if(bInIdleMode && bKioskMode){
+				
+				
+                if (bInIdleMode && bKioskMode){
+					
+					ofPushMatrix();
+					float bgScale = puppetDisplayScale * ((bWorkAtHalfScale) ? 2.0 : 1.0);
+					float ox = ofGetWindowWidth()      - imgW*bgScale;
+					float oy = ofGetWindowHeight()/2.0 - imgH*bgScale/2.0;
+					ofTranslate( ox, oy, 0);
+					ofScale (bgScale, bgScale);
+					
                     drawIdleContour();
-                }else{
-                    ofPushMatrix();
-                    float bgScale = puppetDisplayScale * 1.0;
-                    float ox = ofGetWindowWidth()      - cameraWidth*bgScale;
-                    float oy = ofGetWindowHeight()/2.0 - cameraHeight*bgScale/2.0;
-                    ofTranslate( ox, oy, 0);
-                    ofScale (bgScale, bgScale);
+					ofPopMatrix();
+					 
+					
+                } else {
+					ofPushMatrix();
+					float bgScale = puppetDisplayScale * 1.0;
+					float ox = ofGetWindowWidth()      - cameraWidth*bgScale;
+					float oy = ofGetWindowHeight()/2.0 - cameraHeight*bgScale/2.0;
+					ofTranslate( ox, oy, 0);
+					ofScale (bgScale, bgScale);
                     ofSetColor(255,255,255);
+					
                     colorVideo.draw(0,0, 1024,768);
-                    ofPopMatrix();
-                    
+					ofPopMatrix();
                 }
+				
+				
                 
                 
 			} else {
@@ -1522,21 +1544,71 @@ void ofApp::draw(){
     appFaultManager.drawFaultHelpScreen();
 	
     
-    
     float handTooHighDur = myAppFaultManager.getDurationOfFault (FAULT_HAND_TOO_HIGH);
     //handTooHighDur = ofClamp(handTooHighDur, 0,3);
     //float col = ofMap(handTooHighDur, 0,3, 0,1);
     //col = 255.0 * powf (col, 4.0);
     
-   // ofFill();
-   // ofSetColor(col);
-   // ofRect(mouseX, mouseY, 80,80) ;
-    // printf("handTooHighDur = %f     col = %f \n", handTooHighDur, col);
+	// ofFill();
+	// ofSetColor(col);
+	// ofRect(mouseX, mouseY, 80,80) ;
+	// printf("handTooHighDur = %f     col = %f \n", handTooHighDur, col);
 		
-    if( bDrawGradient ) drawGradientOverlay();
+	if( bDrawGradient ) drawGradientOverlay();
+	updateDataSampleGrabbingProcess();
 }
 
 
+
+//--------------------------------------------------------------
+void ofApp::updateDataSampleGrabbingProcess(){
+	if (bDataSampleGrabbingEnabled && !bRecording && !bInPlaybackMode){
+		bool bCalculatedMesh = bSuccessfullyBuiltMesh;
+		bool bMeshesAreProbablyOK = (appFaultManager.doCurrentFaultsIndicateLikelihoodOfBadMeshes() == false);
+		if (bCalculatedMesh && bMeshesAreProbablyOK){
+			
+			long now = ofGetElapsedTimeMillis();
+			int elapsed = (int)(now - lastDataSampleGrabTimeMillis);
+			if (elapsed >= dataSampleGrabIntervalMillis){
+				
+				string strY = ofToString (ofGetYear());
+				string strN = ofToString (ofGetMonth());
+				string strD = ofToString (ofGetDay());
+				string strH = ofToString (ofGetHours());
+				string strM = ofToString (ofGetMinutes());
+				string strS = ofToString (ofGetSeconds());
+				
+				if (ofGetMonth()   < 10) { strN = "0" + strN; }
+				if (ofGetDay()     < 10) { strD = "0" + strD; }
+				if (ofGetHours()   < 10) { strH = "0" + strH; }
+				if (ofGetMinutes() < 10) { strM = "0" + strM; }
+				if (ofGetSeconds() < 10) { strS = "0" + strS; }
+				
+				string dateString = strY + strN + strD;
+				
+				string filename = "samples/" + dateString + "/sample_";
+				filename += strH;
+				filename += strM;
+				filename += strS;
+				
+				// 1. Record the mesh as a .PLY file.
+				myHandMeshBuilder.getMesh().save(filename + ".ply");
+				
+				// 2. Record the image as a .JPG file.
+				dataSampleImg.setFromPixels( video.getPixels(), cameraWidth, cameraHeight, OF_IMAGE_COLOR);
+				dataSampleImg.saveImage(filename + ".jpg", OF_IMAGE_QUALITY_HIGH);
+				
+				// 3. Record the LEAP data as an .XML file.
+				leapRecorder.startRecording();
+				leapRecorder.recordFrameXML(leap);
+				leapRecorder.endRecording(filename + ".xml");
+				
+				//bInPlaybackMode
+				lastDataSampleGrabTimeMillis = now;
+			}
+		}
+	}
+}
 
 
 //--------------------------------------------------------------
@@ -1601,10 +1673,11 @@ void ofApp::drawContourAnalyzer(){
         case 0:		drawMat(grayMat,						0,0, imgW,imgH);	break;
         case 1:		drawMat(thresholded,					0,0, imgW,imgH);	break;
         case 2:		drawMat(gradientThreshImg,				0,0, imgW,imgH);	break;
-        case 3:		drawMat(thresholdedFinal,				0,0, imgW,imgH);	break;
-        case 4:		drawMat(leapDiagnosticFboMat,			0,0, imgW,imgH);	break;
-        case 5:     drawMat(myHandContourAnalyzer.edgeMat,	0,0, imgW,imgH);	break;
-        case 6:		if (bInPlaybackMode ){
+		case 3:		drawMat(leapArmPixelsOnlyMat,			0,0, imgW,imgH);	break;
+        case 4:		drawMat(thresholdedFinal,				0,0, imgW,imgH);	break;
+        case 5:		drawMat(leapDiagnosticFboMat,			0,0, imgW,imgH);	break;
+        case 6:     drawMat(myHandContourAnalyzer.edgeMat,	0,0, imgW,imgH);	break;
+        case 7:		if (bInPlaybackMode ){
                         video.draw(0, 0, imgW,imgH);
                     } else {
                         processFrameImg.draw(0,0,imgW,imgH);
@@ -1821,7 +1894,7 @@ void ofApp::applicationStateMachine(){
  Hou je hand in dit gebied.
  
  Touch the screen for a new scene.
- Raak het scherm aan voor een nieuwe scène.
+ Raak het scherm aan voor een nieuwe scene.
  
  Oops! Try moving more slowly.
  Oeps! Probeer langzamer te bewegen.
@@ -1833,7 +1906,7 @@ void ofApp::applicationStateMachine(){
  Oeps! Je houdt je hand te hoog.
  
  Hey! Just one hand at a time, please.
- Hee! Eén hand tegelijk alsjeblieft.
+ Hee! Een hand tegelijk alsjeblieft.
  
  Hey! Hold still for a moment, please.
  Hee! Hou je hand stil alsjeblieft.
@@ -2092,10 +2165,11 @@ void ofApp::drawText(){
 	
 }
 
+//--------------------------------------------------------------
 void ofApp::drawGradientOverlay(){
     
     int offSet = 50;
-    int boxSize = 275+offSet;
+    int boxSize = (ofGetWidth()*0.25)+offSet;
     
     ofFill();
     ofSetColor(0,255);
@@ -2113,6 +2187,7 @@ void ofApp::drawGradientOverlay(){
     
 }
 
+//--------------------------------------------------------------
 void ofApp::drawIdleContour(){
     
     // get contours from handContourAnalyzer
@@ -2124,14 +2199,11 @@ void ofApp::drawIdleContour(){
     ofSetLineWidth(4);
     ofSetColor(25,200,255,200);
     ofPolyline smoothContour = myHandContourAnalyzer.theHandContourVerySmooth;
-    ofPushMatrix();
-        ofTranslate(20,-80,0);
-        ofScale(2.5,2.5,1);
+    
 //        for(int i = 0; i < smoothContour.size();i+=2){
 //            ofEllipse(smoothContour[i].x,smoothContour[i].y,2,2);
 //        }
-        smoothContour.draw();
-    ofPopMatrix();
+	smoothContour.draw();
     ofPopStyle();
 }
 
@@ -2290,6 +2362,14 @@ void ofApp::keyPressed(int key){
         case OF_KEY_RIGHT:
              if(video.isLoaded()) video.goToNext();
             break;
+			
+		case '<':
+			prevScene();
+			break;
+		case '>':
+			nextScene();
+			break;
+			
         case 'c':
             cam.reset();
             break;
@@ -2373,7 +2453,9 @@ void ofApp::keyPressed(int key){
 		case ',':
 			bDrawContourAnalyzer = !bDrawContourAnalyzer;
 			break;
-      case 'k':
+			
+		case 'k':
+		case 'K':
             bKioskMode = !bKioskMode;
             if(!bKioskMode){
                 myPuppetManager.bInIdleMode = false;
@@ -2414,15 +2496,12 @@ void ofApp::mousePressed(int x, int y, int button){
 }
 
 //--------------------------------------------------------------
-void ofApp::mouseReleased(int x, int y, int button){
-    
-	if (bUseBothTypesOfScenes){
+void ofApp::mouseReleased (int x, int y, int button){
+	
+	// If we're in kiosk mode,
+	if (bKioskMode){
 		
-		int nTopoScenes = 2;
-		int nPuppScenes = myPuppetManager.scenes.size();
-		int nTotalScenes = nTopoScenes + nPuppScenes;
-		
-		// get direction of swipe.
+		// use direction of swipe to select next scene
 		int dir = 1;
 		float dist = fabs(y-swipeStart);
 		if (dist > 20){
@@ -2432,8 +2511,27 @@ void ofApp::mouseReleased(int x, int y, int button){
 				dir =  1;
 			}
 		}
+		changeScene(dir);
+	}
+}
+
+//--------------------------------------------------------------
+void ofApp::nextScene(){ changeScene ( 1); }
+void ofApp::prevScene(){ changeScene (-1); }
+void ofApp::changeScene (int dir){
+	
+	if (dir >= 0){
+		dir  = 1;
+	} else {
+		dir = -1;
+	}
+	
+	if (bUseBothTypesOfScenes){
 		
-		// modify currentSceneID
+		int nTopoScenes = 2;
+		int nPuppScenes = myPuppetManager.scenes.size();
+		int nTotalScenes = nTopoScenes + nPuppScenes;
+		
 		currentSceneID = (currentSceneID + dir + nTotalScenes)%nTotalScenes;
 		
 		// inform puppeteers
@@ -2447,33 +2545,13 @@ void ofApp::mouseReleased(int x, int y, int button){
 			useTopologyModifierManager = false;
 		}
 		
-		
-		// printf("currentSceneID      = %d\n", currentSceneID);
-	
 	} else {
-	
-	
-	
 		
-		// calculate distance from swipeStart
-		float dist = fabs(y-swipeStart);
-		if (dist > 100){
-			if (y > swipeStart){
-				myPuppetManager.animateSceneChange(-1);
-			} else {
-				myPuppetManager.animateSceneChange( 1);
-			}
-		} else if (!guiTabBar->isVisible()){
-			myPuppetManager.animateSceneChange(0);
-		}
-		
+		myPuppetManager.animateSceneChange(dir);
 	}
-	
-	
-	
-		
 
 }
+
 
 //--------------------------------------------------------------
 void ofApp::windowResized(int w, int h){
