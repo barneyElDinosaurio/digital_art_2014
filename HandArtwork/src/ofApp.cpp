@@ -1929,49 +1929,6 @@ void ofApp::applicationStateMachine(){
 	prevTime = ofGetElapsedTimef();
 }
 
-
-/*
- Please insert your hand to begin.
- Stop je hand in het apparaat om te beginnen.
- 
- Put your hand in this zone.
- Hou je hand in dit gebied.
- 
- Touch the screen for a new scene.
- Raak het scherm aan voor een nieuwe scene.
- 
- Oops! Try moving more slowly.
- Oeps! Probeer langzamer te bewegen.
- 
- Oops! Try keeping your hand flat.
- Oeps! Probeer je hand recht te houden.
- 
- Oops! Your hand is too high up.
- Oeps! Je houdt je hand te hoog.
- 
- Hey! Just one hand at a time, please.
- Hee! Een hand tegelijk alsjeblieft.
- 
- Hey! Hold still for a moment, please.
- Hee! Hou je hand stil alsjeblieft.
- 
- I'm sorry! Your hand might be too small :(
- Het spijt me! Je hand is waarschijnlijk te klein voor mij :(
- 
- Try taking your hand out, and putting it in again.
- Probeer eens om je hand eruit te halen en deze er weer in te stoppen.
- 
- Hey! Only hands, please.
- Hee! Alleen je hand alsjeblieft.
- 
- Hey! That's not a hand.
- Hee! Dat is geen hand.
-
- */
-
-
-
-
 //--------------------------------------------------------------
 void ofApp::drawLiveForRecording(){
     
