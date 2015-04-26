@@ -117,6 +117,7 @@ void ofApp::setup(){
 	bDrawGradient               = true;
 	bKioskMode                  = true;
     bInIdleMode                 = true;
+    bInIdleModePrev             = false;
 	bUseBothTypesOfScenes		= true;
 	bDataSampleGrabbingEnabled	= false;
 	bDrawFaultFeedback			= true;
@@ -679,6 +680,12 @@ void ofApp::update(){
         myPuppetManager.bInIdleMode = false;
         bInIdleMode = false;
     }
+    
+    if(bInIdleMode && !bInIdleModePrev) {
+        backgroundImage.setFromPixels(processFrameImg.getPixelsRef());
+        backgroundImage.update();
+    }
+    bInIdleModePrev = bInIdleMode;
 }
 
 
@@ -1412,18 +1419,17 @@ void ofApp::draw(){
             //
 			// Before we show the puppet, however, show an image in the background if desired.
 			if (bDrawImageInBackground){
+                ofPushStyle();
 				ofPushMatrix();
                     float bgScale = puppetDisplayScale * 1.0;
                     float ox = ofGetWindowWidth()      - cameraWidth*bgScale;
                     float oy = ofGetWindowHeight()/2.0 - cameraHeight*bgScale/2.0;
-                    //rispoli: commented this code out temporarily
-                    //it's not scaling the background correctly
-                    //ofTranslate( ox, oy, 0);
-                    //ofScale (bgScale, bgScale);
-                    ofSetColor(255,255,255);
-                    ofFill();
-                    backgroundImage.draw(0,0, 1024,768); // REMOVED BY GOLAN 4/16/2015
+                    ofTranslate( ox, oy, 0);
+                    ofScale (bgScale, bgScale);
+                    ofSetColor(255);
+                    backgroundImage.draw(0,0, 1024,768);
 				ofPopMatrix();
+                ofPopStyle();
 			}
 			
             // Position the right edge of the puppet at the right edge of the window.
@@ -2195,7 +2201,7 @@ void ofApp::drawIdleContour(){
     ofPushStyle();
     
     ofSetColor(255,255,255);
-    backgroundImage.draw(0,0, 1024,768);
+    backgroundImage.draw(0,0, imgW, imgH);
 
     ofSetLineWidth(4);
     ofSetColor(25,200,255,200);

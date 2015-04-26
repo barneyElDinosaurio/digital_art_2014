@@ -259,6 +259,7 @@ class ofApp : public ofBaseApp{
     bool bDrawGradient;
     bool bKioskMode;
     bool bInIdleMode;
+    bool bInIdleModePrev;
     
 	ofxCvColorImage colorVideo;
 	ofxCvColorImage colorVideoHalfScale;
