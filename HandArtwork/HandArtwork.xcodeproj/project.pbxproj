@@ -132,6 +132,16 @@
 		933A2227713C720CEFF80FD9 /* tinyxml.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2B40EDA85BEB63E46785BC29 /* tinyxml.cpp */; };
 		9707D02419E0950D000C710E /* SplayFingers2Scene.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9707D02219E0950D000C710E /* SplayFingers2Scene.cpp */; };
 		97860C3819DDC6DD00D99D7A /* AppFaultManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 97860C3619DDC6DD00D99D7A /* AppFaultManager.cpp */; };
+		97C6AAE51AC0C72B001354C4 /* ExtraKnuckles.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 97C6AAD91AC0C72B001354C4 /* ExtraKnuckles.cpp */; };
+		97C6AAE61AC0C72B001354C4 /* FractalHand.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 97C6AADB1AC0C72B001354C4 /* FractalHand.cpp */; };
+		97C6AAE71AC0C72B001354C4 /* OppositeThumb.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 97C6AADD1AC0C72B001354C4 /* OppositeThumb.cpp */; };
+		97C6AAE81AC0C72B001354C4 /* Stubby.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 97C6AADF1AC0C72B001354C4 /* Stubby.cpp */; };
+		97C6AAE91AC0C72B001354C4 /* SwellingFingers.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 97C6AAE11AC0C72B001354C4 /* SwellingFingers.cpp */; };
+		97C6AAEA1AC0C72B001354C4 /* TwoThumbs.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 97C6AAE31AC0C72B001354C4 /* TwoThumbs.cpp */; };
+		97C6AAF31AC0C747001354C4 /* DelayedFingersScene.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 97C6AAEB1AC0C747001354C4 /* DelayedFingersScene.cpp */; };
+		97C6AAF41AC0C747001354C4 /* RemappedFingersScene.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 97C6AAED1AC0C747001354C4 /* RemappedFingersScene.cpp */; };
+		97C6AAF51AC0C747001354C4 /* SpasmFingersScene.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 97C6AAEF1AC0C747001354C4 /* SpasmFingersScene.cpp */; };
+		97C6AAF61AC0C747001354C4 /* SpringFingers2Scene.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 97C6AAF11AC0C747001354C4 /* SpringFingers2Scene.cpp */; };
 		9A83D1B3FB64456BC907667F /* ofxUIMinimalSlider.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2BE7216430113F333B8351ED /* ofxUIMinimalSlider.cpp */; };
 		9ABE161F13B1E8B87B7C04F9 /* Plane.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BF0F4A067A58EA2F68D32147 /* Plane.cpp */; };
 		9BE4AE0AA2B8C436BDFE9D4D /* ofxUIDragableLabelButton.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FFD5D3C9D38E29DB72B32254 /* ofxUIDragableLabelButton.cpp */; };
@@ -456,7 +466,6 @@
 		3B57149619D4D3A10071F156 /* vertex.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = vertex.hpp; sourceTree = "<group>"; };
 		3BB5E3A12BFEB583A265CC90 /* vec_math.hpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = vec_math.hpp; path = ../../../addons/ofxCvMin/libs/opencv/include/opencv2/gpu/device/vec_math.hpp; sourceTree = SOURCE_ROOT; };
 		3BDCF9112612C1C34CD41B23 /* timer.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = timer.h; path = ../../../addons/ofxCvMin/libs/opencv/include/opencv2/flann/timer.h; sourceTree = SOURCE_ROOT; };
-		3BDDE60C19E4673E0018E845 /* HandSegmenterSettings.xml */ = {isa = PBXFileReference; lastKnownFileType = text.xml; name = HandSegmenterSettings.xml; path = bin/data/HandSegmenterSettings.xml; sourceTree = SOURCE_ROOT; };
 		3BF6A87719E551CD007DAA3F /* MeshUtils.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MeshUtils.cpp; sourceTree = "<group>"; };
 		3BF6A87A19E551DF007DAA3F /* MinusOne.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MinusOne.cpp; sourceTree = "<group>"; };
 		3BF6A87B19E551DF007DAA3F /* MinusOne.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MinusOne.h; sourceTree = "<group>"; };
@@ -683,11 +692,32 @@
 		946187321200AC04E570E6EC /* hierarchical_clustering_index.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = hierarchical_clustering_index.h; path = ../../../addons/ofxOpenCv/libs/opencv/include/opencv2/flann/hierarchical_clustering_index.h; sourceTree = SOURCE_ROOT; };
 		9604B925D32EE39065747725 /* ofxBaseGui.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 30; name = ofxBaseGui.cpp; path = ../../../addons/ofxGui/src/ofxBaseGui.cpp; sourceTree = SOURCE_ROOT; };
 		961DE8B564EF22E65C9480AE /* ofxUI2DPad.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = ofxUI2DPad.h; path = ../../../addons/ofxUI/src/ofxUI2DPad.h; sourceTree = SOURCE_ROOT; };
+		970163BF1ADF111E00F36B6C /* HandArtworkSettings1.xml */ = {isa = PBXFileReference; lastKnownFileType = text.xml; name = HandArtworkSettings1.xml; path = bin/data/HandArtworkSettings1.xml; sourceTree = SOURCE_ROOT; };
 		9707D02219E0950D000C710E /* SplayFingers2Scene.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SplayFingers2Scene.cpp; sourceTree = "<group>"; };
 		9707D02319E0950D000C710E /* SplayFingers2Scene.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SplayFingers2Scene.h; sourceTree = "<group>"; };
 		974AACF856A0A1B7D8F259E0 /* result_set.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = result_set.h; path = ../../../addons/ofxOpenCv/libs/opencv/include/opencv2/flann/result_set.h; sourceTree = SOURCE_ROOT; };
 		97860C3619DDC6DD00D99D7A /* AppFaultManager.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AppFaultManager.cpp; sourceTree = "<group>"; };
 		97860C3719DDC6DD00D99D7A /* AppFaultManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AppFaultManager.h; sourceTree = "<group>"; };
+		97C6AAD91AC0C72B001354C4 /* ExtraKnuckles.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ExtraKnuckles.cpp; sourceTree = "<group>"; };
+		97C6AADA1AC0C72B001354C4 /* ExtraKnuckles.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ExtraKnuckles.h; sourceTree = "<group>"; };
+		97C6AADB1AC0C72B001354C4 /* FractalHand.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = FractalHand.cpp; sourceTree = "<group>"; };
+		97C6AADC1AC0C72B001354C4 /* FractalHand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FractalHand.h; sourceTree = "<group>"; };
+		97C6AADD1AC0C72B001354C4 /* OppositeThumb.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = OppositeThumb.cpp; sourceTree = "<group>"; };
+		97C6AADE1AC0C72B001354C4 /* OppositeThumb.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OppositeThumb.h; sourceTree = "<group>"; };
+		97C6AADF1AC0C72B001354C4 /* Stubby.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Stubby.cpp; sourceTree = "<group>"; };
+		97C6AAE01AC0C72B001354C4 /* Stubby.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Stubby.h; sourceTree = "<group>"; };
+		97C6AAE11AC0C72B001354C4 /* SwellingFingers.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SwellingFingers.cpp; sourceTree = "<group>"; };
+		97C6AAE21AC0C72B001354C4 /* SwellingFingers.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SwellingFingers.h; sourceTree = "<group>"; };
+		97C6AAE31AC0C72B001354C4 /* TwoThumbs.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TwoThumbs.cpp; sourceTree = "<group>"; };
+		97C6AAE41AC0C72B001354C4 /* TwoThumbs.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TwoThumbs.h; sourceTree = "<group>"; };
+		97C6AAEB1AC0C747001354C4 /* DelayedFingersScene.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = DelayedFingersScene.cpp; sourceTree = "<group>"; };
+		97C6AAEC1AC0C747001354C4 /* DelayedFingersScene.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DelayedFingersScene.h; sourceTree = "<group>"; };
+		97C6AAED1AC0C747001354C4 /* RemappedFingersScene.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = RemappedFingersScene.cpp; sourceTree = "<group>"; };
+		97C6AAEE1AC0C747001354C4 /* RemappedFingersScene.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RemappedFingersScene.h; sourceTree = "<group>"; };
+		97C6AAEF1AC0C747001354C4 /* SpasmFingersScene.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SpasmFingersScene.cpp; sourceTree = "<group>"; };
+		97C6AAF01AC0C747001354C4 /* SpasmFingersScene.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SpasmFingersScene.h; sourceTree = "<group>"; };
+		97C6AAF11AC0C747001354C4 /* SpringFingers2Scene.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SpringFingers2Scene.cpp; sourceTree = "<group>"; };
+		97C6AAF21AC0C747001354C4 /* SpringFingers2Scene.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SpringFingers2Scene.h; sourceTree = "<group>"; };
 		97CFAD0B2F2DB004A8A3BC0B /* objdetect.hpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = objdetect.hpp; path = ../../../addons/ofxOpenCv/libs/opencv/include/opencv2/objdetect/objdetect.hpp; sourceTree = SOURCE_ROOT; };
 		97FBD89E6180673035AD1083 /* video.hpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = video.hpp; path = ../../../addons/ofxOpenCv/libs/opencv/include/opencv2/video/video.hpp; sourceTree = SOURCE_ROOT; };
 		998BCFB6541E5290442662C4 /* devmem2d.hpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = devmem2d.hpp; path = ../../../addons/ofxCvMin/libs/opencv/include/opencv2/gpu/devmem2d.hpp; sourceTree = SOURCE_ROOT; };
@@ -1153,6 +1183,14 @@
 		3B04CBAE19D1DE8A005E6F31 /* scenes */ = {
 			isa = PBXGroup;
 			children = (
+				97C6AAEB1AC0C747001354C4 /* DelayedFingersScene.cpp */,
+				97C6AAEC1AC0C747001354C4 /* DelayedFingersScene.h */,
+				97C6AAED1AC0C747001354C4 /* RemappedFingersScene.cpp */,
+				97C6AAEE1AC0C747001354C4 /* RemappedFingersScene.h */,
+				97C6AAEF1AC0C747001354C4 /* SpasmFingersScene.cpp */,
+				97C6AAF01AC0C747001354C4 /* SpasmFingersScene.h */,
+				97C6AAF11AC0C747001354C4 /* SpringFingers2Scene.cpp */,
+				97C6AAF21AC0C747001354C4 /* SpringFingers2Scene.h */,
 				3B04CBAF19D1DE8A005E6F31 /* EqualizeScene.cpp */,
 				3B04CBB019D1DE8A005E6F31 /* EqualizeScene.h */,
 				3B04CBB119D1DE8A005E6F31 /* FingerLengthPuppeteerScene.cpp */,
@@ -1451,7 +1489,7 @@
 		3BDDE60B19E467320018E845 /* settings */ = {
 			isa = PBXGroup;
 			children = (
-				3BDDE60C19E4673E0018E845 /* HandSegmenterSettings.xml */,
+				970163BF1ADF111E00F36B6C /* HandArtworkSettings1.xml */,
 			);
 			name = settings;
 			sourceTree = "<group>";
@@ -1459,6 +1497,18 @@
 		3BF6A87919E551DF007DAA3F /* topology-modifiers */ = {
 			isa = PBXGroup;
 			children = (
+				97C6AAD91AC0C72B001354C4 /* ExtraKnuckles.cpp */,
+				97C6AADA1AC0C72B001354C4 /* ExtraKnuckles.h */,
+				97C6AADB1AC0C72B001354C4 /* FractalHand.cpp */,
+				97C6AADC1AC0C72B001354C4 /* FractalHand.h */,
+				97C6AADD1AC0C72B001354C4 /* OppositeThumb.cpp */,
+				97C6AADE1AC0C72B001354C4 /* OppositeThumb.h */,
+				97C6AADF1AC0C72B001354C4 /* Stubby.cpp */,
+				97C6AAE01AC0C72B001354C4 /* Stubby.h */,
+				97C6AAE11AC0C72B001354C4 /* SwellingFingers.cpp */,
+				97C6AAE21AC0C72B001354C4 /* SwellingFingers.h */,
+				97C6AAE31AC0C72B001354C4 /* TwoThumbs.cpp */,
+				97C6AAE41AC0C72B001354C4 /* TwoThumbs.h */,
 				3BF6A87A19E551DF007DAA3F /* MinusOne.cpp */,
 				3BF6A87B19E551DF007DAA3F /* MinusOne.h */,
 				3BF6A87C19E551DF007DAA3F /* PlusOne.cpp */,
@@ -2678,6 +2728,7 @@
 				3BFC9FA019D175F500284002 /* HandMeshBuilder.cpp in Sources */,
 				3B4384F319D1BFB7001F75FE /* WmlVector4.cpp in Sources */,
 				E4B69E200A3A1BDC003C02F2 /* main.cpp in Sources */,
+				97C6AAE51AC0C72B001354C4 /* ExtraKnuckles.cpp in Sources */,
 				3B04CBDF19D1DE8A005E6F31 /* LissajousScene.cpp in Sources */,
 				3BFC9F6219D175BB00284002 /* LeapRecorder.cpp in Sources */,
 				E4B69E210A3A1BDC003C02F2 /* ofApp.cpp in Sources */,
@@ -2694,6 +2745,7 @@
 				3B04CBE919D1DE8A005E6F31 /* SinusoidalWiggleScene.cpp in Sources */,
 				3BFC9F9619D175DB00284002 /* polygon_object.cpp in Sources */,
 				1CD33E884D9E3358252E82A1 /* ofxToggle.cpp in Sources */,
+				97C6AAE71AC0C72B001354C4 /* OppositeThumb.cpp in Sources */,
 				250A95BA26587BE85DB0A353 /* ofxCvColorImage.cpp in Sources */,
 				3B4384E819D1BFB7001F75FE /* WmlExtTriangleUtils.cpp in Sources */,
 				3B04CBDE19D1DE8A005E6F31 /* GrowingMiddleFingerScene.cpp in Sources */,
@@ -2707,11 +2759,15 @@
 				D3301F6A0B43BB293ED97C1D /* ofxCvShortImage.cpp in Sources */,
 				63B57AC5BF4EF088491E0317 /* ofxXmlSettings.cpp in Sources */,
 				3B4384EF19D1BFB7001F75FE /* WmlMath.cpp in Sources */,
+				97C6AAE91AC0C72B001354C4 /* SwellingFingers.cpp in Sources */,
 				933A2227713C720CEFF80FD9 /* tinyxml.cpp in Sources */,
 				3B57149919D4D3A10071F156 /* cube.cpp in Sources */,
 				3BFC9F8919D175DB00284002 /* voronoi_color_ids.cpp in Sources */,
+				97C6AAEA1AC0C72B001354C4 /* TwoThumbs.cpp in Sources */,
+				97C6AAF61AC0C747001354C4 /* SpringFingers2Scene.cpp in Sources */,
 				9D44DC88EF9E7991B4A09951 /* tinyxmlerror.cpp in Sources */,
 				5A4349E9754D6FA14C0F2A3A /* tinyxmlparser.cpp in Sources */,
+				97C6AAE81AC0C72B001354C4 /* Stubby.cpp in Sources */,
 				B6840996567E78436F7ECFAB /* ETF.cpp in Sources */,
 				F76B4A79BD8DE4854141CB47 /* fdog.cpp in Sources */,
 				97860C3819DDC6DD00D99D7A /* AppFaultManager.cpp in Sources */,
@@ -2729,6 +2785,7 @@
 				3B4384F119D1BFB7001F75FE /* WmlVector2.cpp in Sources */,
 				10B69DE456AED1288FC9316B /* Tracker.cpp in Sources */,
 				3BF6A87F19E551DF007DAA3F /* MinusOne.cpp in Sources */,
+				97C6AAF31AC0C747001354C4 /* DelayedFingersScene.cpp in Sources */,
 				3B04CBE319D1DE8A005E6F31 /* NorthScene.cpp in Sources */,
 				3BF6A88319E5520D007DAA3F /* TopologyModifierManager.cpp in Sources */,
 				A6668C5B1272D7FCD5B5A16F /* Utilities.cpp in Sources */,
@@ -2749,6 +2806,7 @@
 				3B04CBEB19D1DE8A005E6F31 /* StartrekScene.cpp in Sources */,
 				DE51E964916E52B1AB50BB5F /* Projector.cpp in Sources */,
 				028A1A54F7661FB669A7DFF8 /* Ray.cpp in Sources */,
+				97C6AAF41AC0C747001354C4 /* RemappedFingersScene.cpp in Sources */,
 				9F5C6DD965B4F3A6DB5B88F8 /* ofxUI2DGraph.cpp in Sources */,
 				4B3ED367CA852D522E2EE996 /* ofxUI2DPad.cpp in Sources */,
 				3BFC9F5F19D175BB00284002 /* LeapFinger.cpp in Sources */,
@@ -2795,6 +2853,7 @@
 				3B4384EB19D1BFB7001F75FE /* WmlBox2.cpp in Sources */,
 				F9C20834354ACC8337320B8C /* ofxUIMultiImageToggle.cpp in Sources */,
 				3B04CBF119D1DE8A005E6F31 /* WobbleScene.cpp in Sources */,
+				97C6AAF51AC0C747001354C4 /* SpasmFingersScene.cpp in Sources */,
 				E3D59A6B55F05669B3FBF8BD /* ofxUINumberDialer.cpp in Sources */,
 				D60E54E7FD6E19BC8636E0D2 /* ofxUIRadio.cpp in Sources */,
 				1587708E3CAC72997E43504E /* ofxUIRangeSlider.cpp in Sources */,
@@ -2804,6 +2863,7 @@
 				43BADBB2FE0F17D34B57A705 /* ofxUIScrollableCanvas.cpp in Sources */,
 				740A58CBFDFE578C83A349AF /* ofxUISlider.cpp in Sources */,
 				ADE7C2AFC51E3F7E5E389026 /* ofxUISortableList.cpp in Sources */,
+				97C6AAE61AC0C72B001354C4 /* FractalHand.cpp in Sources */,
 				3BFC9F8A19D175DB00284002 /* voronoi_draw_gl.cpp in Sources */,
 				BFEFCE32DAFE10A8EB519F6C /* ofxUISpacer.cpp in Sources */,
 				3BFC9F9A19D175E500284002 /* ofxBlur.cpp in Sources */,

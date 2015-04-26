@@ -60,11 +60,11 @@ void HandContourAnalyzer::setup(int w, int h){
     
     thresholdConstMat.setTo( (unsigned char) ((int)10));
     
-    blurKernelSize				= 6.0;
-    blurredStrengthWeight		= 0.95;
-    thresholdValue				= 40.0;
+    blurKernelSize				= 6.75;
+    blurredStrengthWeight		= 0.99;
+    thresholdValue				= 38.0;
     prevThresholdValue			= 0;
-	lineBelongingTolerance		= 8.9;
+	lineBelongingTolerance		= 13.0;
 	perpendicularSearch			= 0.40;
     handmarkBlur                = 0.5;
 	

@@ -13,6 +13,8 @@ private:
     ofxUICanvas* gui;
     ofxUIRadio* sceneRadio;
     
+    bool showGuis;
+    
 public:
     void setup();
     void setGuiVisibility(bool visibility);

@@ -69,7 +69,9 @@ public:
     ofTrueTypeFont font;
     float fontAlpha;
     ApplicationFault shownFault;
-    string myFaultString, myFaultStringNL;
+    string myFaultString;
+    string myFaultStringNL;
+    string myFaultStringDE;
     bool bShowingFault;
     float timeStartShowFault;
     int showFaultMode;

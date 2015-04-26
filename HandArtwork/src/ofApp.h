@@ -168,6 +168,7 @@ class ofApp : public ofBaseApp{
 	bool	bComputeAndDisplayPuppet;
 	bool	bFullscreen;
 	bool	bUseBothTypesOfScenes;
+    bool    bEnableAppFaultManager;
 	
     int		framesBackToPlay;
 	int		playingFrame;
@@ -301,6 +302,11 @@ class ofApp : public ofBaseApp{
 	
 	int	  skinColorPatchSize;
 	float averageSkinLuminance;
+    float maxPossibleSkinLuma;
+    float minPossibleSkinLuma;
+    float skinLumaPowf;
+    float maxSkinThresh;
+    float minSkinThresh;
 	
 	void  computeHandStatistics(); 
 	float amountOfPixelMotion01;
