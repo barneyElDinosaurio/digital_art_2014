@@ -2549,27 +2549,15 @@ void ofApp::mousePressed(int x, int y, int button){
         }
     }
     
-    swipeStart = y;
+    if (bKioskMode){
+        int dir = (y > ofGetWidth() / 2) ? -1 : +1;
+        changeScene(dir);
+    }
 }
 
 //--------------------------------------------------------------
 void ofApp::mouseReleased (int x, int y, int button){
-	
-	// If we're in kiosk mode,
-	if (bKioskMode){
-		
-		// use direction of swipe to select next scene
-		int dir = 1;
-		float dist = fabs(y-swipeStart);
-		if (dist > 20){
-			if (y > swipeStart){
-				dir = -1;
-			} else {
-				dir =  1;
-			}
-		}
-		changeScene(dir);
-	}
+
 }
 
 //--------------------------------------------------------------

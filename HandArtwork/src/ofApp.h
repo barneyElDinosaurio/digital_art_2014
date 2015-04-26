@@ -359,7 +359,6 @@ class ofApp : public ofBaseApp{
     
     //------------------------------
     // Change scenes
-    float swipeStart;
 	int currentSceneID;
 	void changeScene (int dir);
 	void nextScene();
