@@ -68,6 +68,7 @@ void ofApp::setup(){
 	imgW			= cameraWidth;
     imgH			= cameraHeight;
 	currentSceneID  = 0;
+    previousDir     = -1;
 	
 	bWorkAtHalfScale = true; // HAS to be true, 'cuz something no longer works elsewise.
 	if (bWorkAtHalfScale){
@@ -2518,8 +2519,14 @@ void ofApp::mousePressed(int x, int y, int button){
     }
     
     if (bKioskMode){
-        int dir = (y > ofGetWidth() / 2) ? -1 : +1;
+        int dir = previousDir;
+        if(y < ofGetWidth() / 3) {
+            dir = -1;
+        } else if(y > 2 * ofGetWidth() / 3) {
+            dir = +1;
+        }
         changeScene(dir);
+        previousDir = dir;
     }
 }
 

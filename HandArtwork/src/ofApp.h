@@ -363,6 +363,7 @@ class ofApp : public ofBaseApp{
     
     //------------------------------
     // Change scenes
+    int previousDir;
 	int currentSceneID;
 	void changeScene (int dir);
 	void nextScene();
