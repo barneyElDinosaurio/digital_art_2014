@@ -1417,7 +1417,7 @@ void ofApp::draw(){
         if (bEverythingIsAwesome){
             
             if(exportTimer.tick()) {
-                string filename = "samples/" + ofGetTimestampString();
+                string filename = "continuous/" + ofGetTimestampString();
                 exportFrame(filename);
             }
             
@@ -2343,11 +2343,12 @@ bool ofApp::useCorrectedCam(){
 }
 
 void ofApp::exportFrame(string filename) {
-    ofImage img;
     myHandMeshBuilder.getMesh().save(filename + ".ply");
-    img.allocate(cameraWidth, cameraHeight, OF_IMAGE_COLOR);
-    img.setFromPixels(video.getPixels(), cameraWidth, cameraHeight, OF_IMAGE_COLOR);
-    img.saveImage(filename + ".jpg");
+    leapRecorder.startRecording();
+    leapRecorder.recordFrameXML(leap);
+    leapRecorder.endRecording(filename + ".xml");
+    Mat colorVideoMat = toCv(colorVideo);
+    ofxCv::saveImage(colorVideoMat, filename + ".jpg");
 }
 
 //--------------------------------------------------------------
