@@ -1,21 +1,32 @@
+// Stubby scene, aka stubbyfingers, one less knuckle
+// rispoli 1-26-15
+
 #pragma once
 
 #include "TopologyModifier.h"
 #include "MeshUtils.h"
 
-class MinusOne : public TopologyModifier {
+class Stubby : public TopologyModifier {
 protected:
     
     ofPolyline removalRegion;
     vector<pair<ofIndexType, ofIndexType> > stitchIndices;
     
-    ofMesh blendMesh;
+    ofMesh pinkyMesh;
+    ofMesh ringMesh;
+    ofMesh middleMesh;
+    ofMesh indexMesh;
+    
+    ofMesh pinkyBlendMesh;
+    ofMesh ringBlendMesh;
+    ofMesh middleBlendMesh;
+    ofMesh indexBlendMesh;
     
     ofMesh final;
 	
 	ofxButterfly    butterflySubdivider;
     ofMesh          refinedMesh;
-	bool			bUseButterfly; 
+	bool			bUseButterfly;
     
 public:
     string getName() const;

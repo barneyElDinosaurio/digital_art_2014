@@ -3,6 +3,8 @@
 #include "HandMeshBuilder.h"
 #include "TopologyModifier.h"
 
+
+
 class TopologyModifierManager {
 private:
     TopologyModifier* curScene;
@@ -11,11 +13,14 @@ private:
     ofxUICanvas* gui;
     ofxUIRadio* sceneRadio;
     
+    bool showGuis;
+    
 public:
     void setup();
     void setGuiVisibility(bool visibility);
     void setScene(int sceneIndex);
-    int getSceneCount() const;
+    int  getSceneCount() const;
     void update(HandMeshBuilder& handMeshBuilder);
     void draw(const ofTexture& texture);
+	void saveMeshes(); 
 };

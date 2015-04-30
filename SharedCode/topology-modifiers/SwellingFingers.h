@@ -1,13 +1,19 @@
+// experimental swelling fingers/fat fingers scene!
+// work in progress !!
+// rispoli 1-26-15
+
 #pragma once
 
 #include "TopologyModifier.h"
 #include "MeshUtils.h"
 
-class MinusOne : public TopologyModifier {
+class SwellingFingers : public TopologyModifier {
 protected:
     
     ofPolyline removalRegion;
     vector<pair<ofIndexType, ofIndexType> > stitchIndices;
+    
+    vector<ofMesh> fingerMeshes;
     
     ofMesh blendMesh;
     
@@ -16,6 +22,12 @@ protected:
 	ofxButterfly    butterflySubdivider;
     ofMesh          refinedMesh;
 	bool			bUseButterfly; 
+    
+    float timer;
+    float pulseSpeed;
+    float pulseGapWidth;
+    float swellAmt;
+    float swellPower;
     
 public:
     string getName() const;

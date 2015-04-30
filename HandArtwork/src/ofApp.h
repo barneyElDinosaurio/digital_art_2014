@@ -171,6 +171,7 @@ class ofApp : public ofBaseApp{
 	bool	bComputeAndDisplayPuppet;
 	bool	bFullscreen;
 	bool	bUseBothTypesOfScenes;
+    bool    bEnableAppFaultManager;
 	
     int		framesBackToPlay;
 	int		playingFrame;
@@ -261,6 +262,7 @@ class ofApp : public ofBaseApp{
     bool bDrawGradient;
     bool bKioskMode;
     bool bInIdleMode;
+    bool bInIdleModePrev;
     
 	ofxCvColorImage colorVideo;
 	ofxCvColorImage colorVideoHalfScale;
@@ -304,6 +306,11 @@ class ofApp : public ofBaseApp{
 	
 	int	  skinColorPatchSize;
 	float averageSkinLuminance;
+    float maxPossibleSkinLuma;
+    float minPossibleSkinLuma;
+    float skinLumaPowf;
+    float maxSkinThresh;
+    float minSkinThresh;
 	
 	void  computeHandStatistics(); 
 	float amountOfPixelMotion01;
@@ -337,6 +344,7 @@ class ofApp : public ofBaseApp{
     float maxAllowableHeightZ;
 	
     AppFaultManager appFaultManager;
+	bool bDrawFaultFeedback;
     float prevTime;
     
     //-------------------------------
@@ -351,11 +359,10 @@ class ofApp : public ofBaseApp{
     float puppetDisplayScale;
 	
 	TopologyModifierManager myTopologyModifierManager;
-    bool useTopologyModifierManager;
+    bool bUseTopologyModifierManager;
     
     //------------------------------
     // Change scenes
-    float swipeStart;
 	int currentSceneID;
 	void changeScene (int dir);
 	void nextScene();

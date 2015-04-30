@@ -3,19 +3,27 @@
 #include "TopologyModifier.h"
 #include "MeshUtils.h"
 
-class MinusOne : public TopologyModifier {
+class ExtraKnuckles : public TopologyModifier {
 protected:
     
-    ofPolyline removalRegion;
     vector<pair<ofIndexType, ofIndexType> > stitchIndices;
     
-    ofMesh blendMesh;
+    vector<ofMesh> fingerMeshes;
+    
+    vector<ofMesh> fingerBaseMeshes;
+    vector<ofMesh> fingertipMeshes;
+    vector<ofMesh> knuckleMeshes;
+    
+    vector<ofMesh> lowerGapMeshes;
+    vector<ofMesh> upperGapMeshes;
+    
+    vector<ofMesh> blendMeshes;
     
     ofMesh final;
 	
 	ofxButterfly    butterflySubdivider;
     ofMesh          refinedMesh;
-	bool			bUseButterfly; 
+	bool			bUseButterfly;
     
 public:
     string getName() const;

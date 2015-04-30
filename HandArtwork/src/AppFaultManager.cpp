@@ -48,8 +48,8 @@ void AppFaultManager::setup(){
     priorityOrder[FAULT_TOO_MANY_HANDS] = p; p++;
     priorityOrder[FAULT_HAND_TOO_FAST] = p; p++;
     priorityOrder[FAULT_HAND_TOO_VERTICAL] = p; p++;
+	priorityOrder[FAULT_NO_LEAP_HAND_TOO_SMALL] = p; p++;
     priorityOrder[FAULT_HAND_TOO_CURLED] = p; p++;
-    priorityOrder[FAULT_NO_LEAP_HAND_TOO_SMALL] = p; p++;
     priorityOrder[FAULT_NO_LEAP_OBJECT_PRESENT] = p; p++;
     priorityOrder[FAULT_SAME_SCENE_TOO_LONG] = p; p++;
     priorityOrder[FAULT_LEAP_DROPPED_FRAME] = p; p++;
@@ -58,10 +58,11 @@ void AppFaultManager::setup(){
     
     bShowingFault = false;
     
-    font.loadFont("fonts/vagrblsb.ttf", 24);
+    font.loadFont("fonts/vagrblsb.ttf", 24, true, true);
     fontAlpha = 0;
     myFaultString = "";
     myFaultStringNL = "";
+    myFaultStringDE = "";
     shownFault = FAULT_NOTHING_WRONG;
     timeStartShowFault = 0.f;
     showFaultMode = 0;
@@ -219,7 +220,7 @@ void AppFaultManager::drawFaultHelpScreen(){
     
     //cout << "activeFault " << activeFault << endl;
     
-   if(showFaultMode == 0){
+   if (showFaultMode == 0){
         
        // start new
         switch (activeFault) {
@@ -229,12 +230,14 @@ void AppFaultManager::drawFaultHelpScreen(){
                 break;
             case FAULT_NO_USER_PRESENT_BRIEF:
                 myFaultString = "Please insert your hand to begin.";
-                myFaultStringNL = " Stop je hand in het apparaat om te beginnen.";
+                myFaultStringNL = "Stop je hand in het apparaat om te beginnen.";
+                myFaultStringDE = "Zum Starten bitte die Hand einlegen.";
                 break;
             
             case FAULT_NO_USER_PRESENT_LONG:
                 myFaultString = "Please insert your hand to begin.";
                 myFaultStringNL = "Stop je hand in het apparaat om te beginnen.";
+                myFaultStringDE = "Zum Starten bitte die Hand einlegen.";
                 break;
             
             case FAULT_LEAP_DROPPED_FRAME:
@@ -246,31 +249,37 @@ void AppFaultManager::drawFaultHelpScreen(){
             case FAULT_NO_LEAP_OBJECT_PRESENT:
                 myFaultString = "Only hands, please.";
                 myFaultStringNL = "Alleen je hand alsjeblieft.";
+                myFaultStringDE = "Bitte ausschließlich die Hände verwenden.";
                 break;
             
             case FAULT_TOO_MANY_HANDS:
                 myFaultString = "Just one hand at a time, please.";
-                myFaultStringNL = "E√©n hand tegelijk alsjeblieft.";
+                myFaultStringNL = "Een hand tegelijk alsjeblieft.";
+                myFaultStringDE = "Bitte jeweils immer nur eine einzelne Hand.";
                 break;
             
             case FAULT_HAND_TOO_FAST:
                 myFaultString = "Try moving more slowly.";
                 myFaultStringNL = "Probeer langzamer te bewegen.";
+                myFaultStringDE = "Versuche, die Bewegung langsamer auszuführen.";
                 break;
             
             case FAULT_HAND_TOO_HIGH:
                 myFaultString = "Your hand is too high up.";
                 myFaultStringNL = "Je houdt je hand te hoog.";
+                myFaultStringDE = "Deine Hand ist zu weit oben.";
                 break;
              
             case FAULT_HAND_TOO_CURLED:
                 myFaultString = "Try keeping your hand flat.";
-                myFaultStringNL = " Probeer je hand recht te houden.";
+                myFaultStringNL = "Probeer je hand recht te houden.";
+                myFaultStringDE = "Die Hand bitte möglichst flach halten.";
                 break;
                 
             case FAULT_HAND_TOO_VERTICAL:
                 myFaultString = "Try keeping your hand flat.";
-                myFaultStringNL = " Probeer je hand recht te houden.";
+                myFaultStringNL = "Probeer je hand recht te houden.";
+                myFaultStringDE = "Die Hand bitte möglichst flach halten.";
                 break;
                 
             case FAULT_HAND_NOT_DEEP_ENOUGH:
@@ -282,11 +291,13 @@ void AppFaultManager::drawFaultHelpScreen(){
             case FAULT_NO_LEAP_HAND_TOO_SMALL:
                 myFaultString = "I'm sorry! Your hand might be too small :(";
                 myFaultStringNL = "Het spijt me! Je hand is waarschijnlijk te klein voor mij :(";
+                myFaultStringDE = "Es tut mir leid, deine Hand ist vielleicht zu klein. :(";
                 break;
             
             case FAULT_SAME_SCENE_TOO_LONG:
                 myFaultString = "Touch the screen for a new scene";
                 myFaultStringNL = "Raak het scherm aan voor een nieuwe scene";
+                myFaultStringDE = "Bitte den Bildschirm berühren um neu zu starten.";
                 break;
                 
             default:
@@ -346,13 +357,13 @@ void AppFaultManager::drawFaultHelpScreen(){
         font.drawString(myFaultString, 0,0);
     ofPopMatrix();
     
-    stringWidth =  font.stringWidth(myFaultStringNL);
+    stringWidth =  font.stringWidth(myFaultStringDE);
     
     ofSetColor(255,255*powf(fontAlpha,.75));
     ofPushMatrix();
     ofTranslate(100, ofGetHeight()/2+stringWidth/2.0);
     ofRotate(-90);
-    font.drawString(myFaultStringNL, 0,0);
+    font.drawString(myFaultStringDE, 0,0);
     ofPopMatrix();
     
     

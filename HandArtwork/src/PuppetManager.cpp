@@ -16,7 +16,22 @@ void PuppetManager::setupPuppeteer (HandMeshBuilder &myHandMeshBuilder){
 	prevRequestedScene = 0;
     
 	// Create all of the scenes
+    
+    HandSkeleton &iHSk = immutableHandSkeleton;
+    HandWithFingertipsSkeleton &hwFSk = handWithFingertipsSkeleton;
+    HandWithFingertipsSkeleton &ihwFSk = immutableHandWithFingertipsSkeleton;
+    
+    scenes.push_back(new SplayFingersScene		(&puppet, &hwFSk, &ihwFSk));
+    scenes.push_back(new SpringFingers2Scene	(&puppet, &hwFSk, &ihwFSk));
+    scenes.push_back(new SinusoidalLengthScene	(&puppet, &handSkeleton, &iHSk));
+    scenes.push_back(new WiggleScene			(&puppet, &handSkeleton, &iHSk));
+    scenes.push_back(new EqualizeScene			(&puppet, &handSkeleton, &iHSk));
+    scenes.push_back(new LissajousScene			(&puppet, &threePointSkeleton, &immutableThreePointSkeleton));
+    scenes.push_back(new PulsatingPalmScene		(&puppet, &palmSkeleton, &immutablePalmSkeleton));
+    scenes.push_back(new StartrekScene			(&puppet, &handSkeleton, &iHSk));
 
+
+    /*
 	scenes.push_back(new SinusoidalLengthScene	(&puppet, &handSkeleton, &immutableHandSkeleton));
     scenes.push_back(new WiggleScene			(&puppet, &handSkeleton, &immutableHandSkeleton));
 	scenes.push_back(new EqualizeScene			(&puppet, &handSkeleton, &immutableHandSkeleton));
@@ -28,23 +43,27 @@ void PuppetManager::setupPuppeteer (HandMeshBuilder &myHandMeshBuilder){
 	scenes.push_back(new SpringFingerScene		(&puppet, &handSkeleton, &immutableHandSkeleton));
     scenes.push_back(new SplayFingers2Scene		(&puppet, &handWithFingertipsSkeleton, &immutableHandWithFingertipsSkeleton));
 	
-	
-	
     
-	///// scenes.push_back(new RetractingFingersScene	(&puppet, &handWithFingertipsSkeleton, &immutableHandWithFingertipsSkeleton));
-	///// scenes.push_back(new GrowingMiddleFingerScene	(&puppet, &handWithFingertipsSkeleton, &immutableHandWithFingertipsSkeleton));
-	///// scenes.push_back(new NorthScene				(&puppet, &handSkeleton, &immutableHandSkeleton));
-    ///// scenes.push_back(new SinusoidalWiggleScene	(&puppet, &handWithFingertipsSkeleton, &immutableHandWithFingertipsSkeleton));
-    ///// scenes.push_back(new PropogatingWiggleScene	(&puppet, &handWithFingertipsSkeleton, &immutableHandWithFingertipsSkeleton));
-    ///// scenes.push_back(new PinkyPuppeteerScene		(&puppet, &handWithFingertipsSkeleton, &immutableHandWithFingertipsSkeleton));
-	///// scenes.push_back(new FingerLengthPuppeteerScene(&puppet, &handWithFingertipsSkeleton, &immutableHandWithFingertipsSkeleton));
-	///// scenes.push_back(new RetractingFingersScene	(&puppet, &handWithFingertipsSkeleton, &immutableHandWithFingertipsSkeleton));
-    ///// scenes.push_back(new StraightenFingersScene	(&puppet, &handWithFingertipsSkeleton, &immutableHandWithFingertipsSkeleton));
-    ///// scenes.push_back(new TwitchScene				(&puppet, &handSkeleton, &immutableHandSkeleton));
-    ///// scenes.push_back(new WaveScene				(&puppet, &handSkeleton, &immutableHandSkeleton));
-    ///// scenes.push_back(new MiddleDifferentLengthScene(&puppet, &handSkeleton, &immutableHandSkeleton));
-   	///// scenes.push_back(new NoneScene				(&puppet, &handSkeleton, &immutableHandSkeleton));
-    ///// scenes.push_back(new WobbleScene				(&puppet, &handSkeleton, &immutableHandSkeleton));
+	 scenes.push_back(new RetractingFingersScene	(&puppet, &handWithFingertipsSkeleton, &immutableHandWithFingertipsSkeleton));
+	 scenes.push_back(new GrowingMiddleFingerScene	(&puppet, &handWithFingertipsSkeleton, &immutableHandWithFingertipsSkeleton));
+	 scenes.push_back(new NorthScene				(&puppet, &handSkeleton, &immutableHandSkeleton));
+     scenes.push_back(new SinusoidalWiggleScene     (&puppet, &handWithFingertipsSkeleton, &immutableHandWithFingertipsSkeleton));
+     scenes.push_back(new PropogatingWiggleScene	(&puppet, &handWithFingertipsSkeleton, &immutableHandWithFingertipsSkeleton));
+     scenes.push_back(new PinkyPuppeteerScene		(&puppet, &handWithFingertipsSkeleton, &immutableHandWithFingertipsSkeleton));
+	 scenes.push_back(new FingerLengthPuppeteerScene(&puppet, &handWithFingertipsSkeleton, &immutableHandWithFingertipsSkeleton));
+	 scenes.push_back(new RetractingFingersScene	(&puppet, &handWithFingertipsSkeleton, &immutableHandWithFingertipsSkeleton));
+     scenes.push_back(new StraightenFingersScene	(&puppet, &handWithFingertipsSkeleton, &immutableHandWithFingertipsSkeleton));
+     scenes.push_back(new TwitchScene				(&puppet, &handSkeleton, &immutableHandSkeleton));
+     scenes.push_back(new WaveScene                 (&puppet, &handSkeleton, &immutableHandSkeleton));
+     scenes.push_back(new MiddleDifferentLengthScene(&puppet, &handSkeleton, &immutableHandSkeleton));
+   	 scenes.push_back(new NoneScene                 (&puppet, &handSkeleton, &immutableHandSkeleton));
+     scenes.push_back(new WobbleScene				(&puppet, &handSkeleton, &immutableHandSkeleton));
+     scenes.push_back(new SpringFingers2Scene	(&puppet, &handWithFingertipsSkeleton, &immutableHandWithFingertipsSkeleton));
+     scenes.push_back(new RemappedFingersScene	    (&puppet, &handWithFingertipsSkeleton, &immutableHandWithFingertipsSkeleton));
+     scenes.push_back(new DelayedFingersScene	    (&puppet, &handWithFingertipsSkeleton, &immutableHandWithFingertipsSkeleton));
+     scenes.push_back(new SpasmFingersScene	    (&puppet, &handWithFingertipsSkeleton, &immutableHandWithFingertipsSkeleton));
+    */
+    
     
 	myHandMeshBuilder.loadDefaultMesh();
 	

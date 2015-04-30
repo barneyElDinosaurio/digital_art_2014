@@ -1,58 +1,21 @@
 #include "ofApp.h"
 
 /*
- // UNTITLED DIGITAL ART (AUGMENTED HAND SERIES)
- // By Golan Levin, Chris Sugrue, and Kyle McDonald
- // https://github.com/CreativeInquiry/digital_art_2014
- // Contact: @golan or golan@flong.com
 
- // Commissioned by the Cinekid Festival of Children's Media, Amsterdam
- // Developed at the Frank-Ratchye STUDIO for Creative Inquiry at CMU
- // Concept and development: Golan Levin, Chris Sugrue, Kyle McDonald
- // Software assistance: Dan Wilcox, Bryce Summers, Erica Lazrus
- // Conceived 2005, Developed 2013-2014
- //
- // Special thanks to Paulien Dresscher, Theo Watson and Eyeo Festival for encouragement.
- // Thanks to Elliot Woods and Simon Sarginson for assistance with Leap/Camera calibration.
- // Thanks to Adam Carlucci for assistance using the Accelerate Framework in openFrameworks.
- // Additional thanks to Rick Barraza and Ben Lower of Microsoft; Christian Schaller and 
- // Hannes Hofmann of Metrilus GmbH; Dr. Roland Goecke of University of Canberra;
- // and Doug Carmean and Chris Rojas of Intel.
- //
- // Developed in openFrameworks (OF), a free, open-source toolkit for arts engineering.
- // This project also uses a number of open-source OF "addons" contributed by others:
- // Uses ofxPuppet addon by Zach Lieberman, based on Ryan Schmidt's As-Rigid-As-Possible code.
- // Uses ofxLeapMotion addon by Theo Watson, with assistance from Dan Wilcox.
- // Uses ofxCv, ofxLibdc, and ofxTiming addons by Kyle McDonald.
- // Uses ofxCvMin and ofxRay addons by Elliot Woods.
- // Uses ofxButterfly addon by Bryce Summers.
+ UNTITLED DIGITAL ART (AUGMENTED HAND SERIES)
+ By Golan Levin, Chris Sugrue, and Kyle McDonald
+ Repository: http://github.com/CreativeInquiry/digital_art_2014
+ Contact: @golan or golan@flong.com
  
- // Links: 
- // https://github.com/Bryce-Summers/ofxButterfly
- // https://github.com/ofTheo/ofxLeapMotion
+ Commissioned by the Cinekid Festival, Amsterdam, October 2014, with support from the Mondriaan Fund for visual art. Developed at the Frank-Ratchye STUDIO for Creative Inquiry at Carnegie Mellon University with additional support from the Pennsylvania Council on the Arts and the Frank-Ratchye Fund for Art @ the Frontier. Concept and software development: Golan Levin, Chris Sugrue, Kyle McDonald. Software assistance: Dan Wilcox, Bryce Summers, Erica Lazrus. Conceived 2005; developed 2013-2014.
  
- // Shoutouts from @golan @chrissugrue @kcimc: 
- //
-
+ Special thanks to Paulien Dresscher, Theo Watson and Eyeo Festival for encouragement, and to Dan Wilcox, Bryce Summers, Erica Lazrus, and Zachary Rispoli for their help making this project possible. Thanks to Elliot Woods and Simon Sarginson for assistance with Leap/camera calibration, and to Adam Carlucci for his helpful tutorial on using the Accelerate Framework in openFrameworks. Additional thanks to Rick Barraza and Ben Lower of Microsoft; Christian Schaller and Hannes Hofmann of Metrilus GmbH; Dr. Roland Goecke of University of Canberra; and Doug Carmean and Chris Rojas of Intel.
+ 
+ Developed in openFrameworks (OF), a free, open-source toolkit for arts engineering. This project also uses a number of open-source addons for openFrameworks contributed by others: ofxPuppet by Zach Lieberman, based on Ryan Schmidt's implementation of As-Rigid-As-Possible Shape Manipulation by Igarashi, Moscovich & Hughes; ofxLeapMotion by Theo Watson, with assistance from Dan Wilcox; ofxCv, ofxLibdc, and ofxTiming by Kyle McDonald; ofxCvMin and ofxRay by Elliot Woods; and the ofxButterfly mesh subdivision addon by Bryce Summers.
+ 
+ Shoutouts from @golan @chrissugrue & @kcimc: @admsyn @bla_fasel @bwycz @cinekid @CMUSchoolofArt @creativeinquiry @danomatika @elliotwoods @eyeofestival @laurmccarthy @openframeworks @PESfilm @rickbarraza @SimonsMine @theowatson @zachlieberman
+ 
 */
-
-
-// TODO: Add +1/-1 scenes by Kyle
-// TODO: Add other scenes by Chris (springy?)
-// TODO: Improve thresholding for persons with dark skin.
-// TODO: Connect application faults to show/hide Puppet (see draw()).
-// TODO: Enable saving of GUIs into XML files.
-// TODO: Implement touchscreen behavior (swipe or poke to change scenes)
-// TODO: Make sure cursor hides/shows properly.
-// TODO: Darken camera image & puppet when hand is too high.
-// TODO: Patch holes in wrist area by filling with solid color from LEAP arm.
-// TODO: Decide on final list of scenes, disable others.
-// TODO: Refactor ofApp.cpp/h to have a CameraAndLeapRecorder. (Not urgent)
-// TODO: Check whether computing amount of leap motion works with delayed data
-// TODO: Record hands when they are still enough -- for eventual research/diagnostic purposes.
-// TODO: Get Bryce to amend ofxButterfly so that it does not reorder triangles.
-// TODO: Create option to rotate entire display view by 180.
-
 
 
 //=============================================================================
@@ -71,6 +34,16 @@
 
 
 //=============================================================================
+//
+// TODO: Enable saving of GUIs into XML files.
+// TODO: Make sure cursor hides/shows properly.
+// TODO: Refactor ofApp.cpp/h to have a CameraAndLeapRecorder. (Not urgent)
+// TODO: Check whether computing amount of leap motion works with delayed data
+// TODO: Get Bryce to amend ofxButterfly so that it does not reorder triangles.
+// TODO: Create option to rotate entire display view by 180.
+
+
+//=============================================================================
 
 void ofApp::setup(){
 	
@@ -84,7 +57,7 @@ void ofApp::setup(){
     string basePath = ofToDataPath("", true);
     ofSetDataPathRoot("../../../../../SharedData/");
 	
-	backgroundImage.loadImage("recordings/backgroundImage.jpg");
+	backgroundImage.loadImage("recordings/backgroundImage.png");
     
     cameraWidth		= 1024;
     cameraHeight	= 768;
@@ -114,11 +87,11 @@ void ofApp::setup(){
 	// currentFrameImg and processFrameImg are both at the camera resolution.
     currentFrameImg.allocate (cameraWidth, cameraHeight, OF_IMAGE_COLOR);
     processFrameImg.allocate (cameraWidth, cameraHeight, OF_IMAGE_COLOR);
-	for(int i = 0; i < imageSequence.size(); i++) {
+	for (int i = 0; i < imageSequence.size(); i++) {
 		imageSequence[i].allocate (cameraWidth,cameraHeight, OF_IMAGE_COLOR);
 	}
     
-
+    //--------------- Initialize boolean state variables.
     playingFrame				= 0;
     bInPlaybackMode				= false;
 	bEndRecording				= false;
@@ -144,11 +117,15 @@ void ofApp::setup(){
 	bDrawGradient               = true;
 	bKioskMode                  = true;
     bInIdleMode                 = true;
+    bInIdleModePrev             = false;
 	bUseBothTypesOfScenes		= true;
-	bDataSampleGrabbingEnabled	= true;
+	bDataSampleGrabbingEnabled	= false;
+	bDrawFaultFeedback			= true;
+    bEnableAppFaultManager      = true;
 	
 	//--------------- Setup LEAP
 	leap.open();
+    leap.setPolicyFlagHMD();
     leapVisualizer.setup();
 	leapVisualizer.enableVoronoiRendering (imgW, imgH, bWorkAtHalfScale);
 	leapVisualizer.bDrawGrid = false;
@@ -169,6 +146,9 @@ void ofApp::setup(){
     lastIndexVideoPos.set(0,0,0);
     lastIndexLeapPos.set(0,0,0);
     
+    //-------------------------------------------
+    // OF & OpenGL settings.
+    
     ofEnableAlphaBlending();
 	
     glEnable  (GL_NORMALIZE);
@@ -181,7 +161,7 @@ void ofApp::setup(){
 	
 	//-------------------------------------------
 	bUseRedChannelForLuminance	= true;
-	bDoMorphologicalOps			= true;
+	bDoMorphologicalOps			= false;
 	bDoAdaptiveThresholding		= false;
 	bUseGradientThreshold		= true;
 
@@ -195,6 +175,11 @@ void ofApp::setup(){
 	prevGradientThreshPow		= 1.0;
 	skinColorPatchSize			= 64;
 	averageSkinLuminance		= 0;
+    maxPossibleSkinLuma         = 210;
+    minPossibleSkinLuma         = 56;
+    skinLumaPowf                = 1.5;
+    maxSkinThresh               = 39;
+    minSkinThresh               = 27;
 	
 	dataSampleGrabIntervalMillis = 20000;
 	lastDataSampleGrabTimeMillis = 0;
@@ -229,8 +214,6 @@ void ofApp::setup(){
 	coloredBinarizedImg.create	(imgH, imgW, CV_8UC3); // 3-channel
 	thresholdedFinal8UC3.create (imgH, imgW, CV_8UC3);
 	
-    
-	
 	graySmall.create			(imgH/4, imgW/4, CV_8UC1);
 	blurredSmall.create			(imgH/4, imgW/4, CV_8UC1);
 	
@@ -263,21 +246,26 @@ void ofApp::setup(){
 	
 	
 	// Get us ready to demo in a hurry
-	string filePathCalib = "oct-8-CALIBRATION"; //"calib_chris_corrected_4";
+	string filePathCalib = "2015-april-15-CALIBRATION";
+        // Previously:
+        // "oct-8-CALIBRATION";
+        // "calib_chris_corrected_4";
 	calibrateFromXML(filePathCalib);
 	
-	string filePathPlay = "sep15-golan-perfect"; //"play_chris_corrected_4";
+	string filePathPlay = "2015-april-15-recording";
+    // "sep15-golan-perfect";
+    // "play_chris_corrected_4";
 	folderName = filePathPlay;
 	loadAndPlayRecording(filePathPlay);
 	bUseVirtualProjector = true;
 
-	amountOfPixelMotion01 = 0;
-	amountOfLeapMotion01 = 0;
-	zHandExtent = 0.00;
-	motionAlpha = 0.60;
-	zExtentAlpha = 0.30;
-	fingerCurlAlpha = 0.60;
-	amountOfFingerCurl01 = 0;
+	amountOfPixelMotion01   = 0;
+	amountOfLeapMotion01    = 0;
+	zHandExtent             = 0.00;
+	motionAlpha             = 0.60;
+	zExtentAlpha            = 0.30;
+	fingerCurlAlpha         = 0.60;
+	amountOfFingerCurl01    = 0;
 	
 	elapsedMicros = 0;
 	elapsedMicrosInt = 0;
@@ -288,7 +276,6 @@ void ofApp::setup(){
 												cv::Size( 2*morph_size + 1, 2*morph_size+1 ),
 												cv::Point(  morph_size,       morph_size ) );
 	
-    
     //----------------------------------
     // CONTOUR ANALYZER AND MESH BUILDER
 	myHandContourAnalyzer.setup(imgW, imgH);
@@ -299,23 +286,24 @@ void ofApp::setup(){
 	// PUPPET MANAGER & PUPPET
 	myPuppetManager.setupPuppeteer (myHandMeshBuilder);
 	myPuppetManager.setupPuppetGui ();
-    puppetDisplayScale = 1.20;
+    puppetDisplayScale = 1.15;
 	
-	useTopologyModifierManager = false;
+	bUseTopologyModifierManager = false;
     myTopologyModifierManager.setup();
     
     // APPLICATION FAULT MANAGER
     appFaultManager.setup();
     minHandInsertionPercent = 0.29;
     maxAllowableMotion		= 15.5;
-    maxAllowableFingerCurl	= 0.31;
-    maxAllowableExtentZ		= 0.5;
-    maxAllowableHeightZ     = 1.75;
+    maxAllowableFingerCurl	= 0.48;
+    maxAllowableExtentZ		= 0.55;
+    maxAllowableHeightZ     = 2.05;
 	
     //--------------
 	// MUST BE LAST IN SETUP()
 	setupGui();
     keyPressed('g');
+    ofHideCursor();
 }
 
 
@@ -323,16 +311,20 @@ void ofApp::setup(){
 //--------------------------------------------------------------
 void ofApp::initializeCamera(){
 	
-	//--------------- Setup camera grabber
+	//--------------- Setup camera grabber.
+    // We are using a PointGrey color firewire camera.
 	#ifdef _USE_LIBDC_GRABBER
+    
 		// For the ofxLibdc::PointGrey cameraLibdc;
 		cout << "libdc cameras found: " << cameraLibdc.getCameraCount() << endl;
 		
         ofSetVerticalSync(false);
-		cameraLibdc.setImageType(OF_IMAGE_COLOR);
+		cameraLibdc.setImageType (OF_IMAGE_COLOR);
 		cameraLibdc.setSize (cameraWidth, cameraHeight);
-        cameraLibdc.setImageType(OF_IMAGE_COLOR);
-        cameraLibdc.setBayerMode(DC1394_COLOR_FILTER_GRBG); // why turns camera video grayscale???
+        cameraLibdc.setImageType (OF_IMAGE_COLOR);
+        cameraLibdc.setBayerMode (DC1394_COLOR_FILTER_GRBG);
+        // Why does the camera video turn grayscale???
+        // There's some sort of error which initializes it incorrectly.
     
         cameraLibdc.setBlocking(true);
         cameraLibdc.setFrameRate(30);
@@ -340,18 +332,16 @@ void ofApp::initializeCamera(){
         cameraLibdc.setExposure(1.0);
         cameraLibdc.setup();
     
-		cameraLibdcShutterInv = 40.0;
+		cameraLibdcShutterInv = 41.0;
 		cameraLibdcBrightness = 0;
 		cameraLibdcGain = 0.0;
 		cameraLibdcGamma = 1.0;
     
-        cameraLibdc.setBrightness(cameraLibdcBrightness);
-        cameraLibdc.setGain(cameraLibdcGain);
-        cameraLibdc.setGammaAbs(cameraLibdcGamma);
-		cameraLibdc.setShutterAbs(1.0 / cameraLibdcShutterInv);
-		
-		
-	
+        cameraLibdc.setBrightness (cameraLibdcBrightness);
+        cameraLibdc.setGain (cameraLibdcGain);
+        cameraLibdc.setGammaAbs (cameraLibdcGamma);
+		cameraLibdc.setShutterAbs (1.0 / cameraLibdcShutterInv);
+
 	#else
 		cameraVidGrabber.setVerbose(true);
 		cameraVidGrabber.initGrabber(cameraWidth,cameraHeight);
@@ -361,13 +351,15 @@ void ofApp::initializeCamera(){
 //--------------------------------------------------------------
 void ofApp::initializeCameraCalibration(){
 	
-	//--------------- Set up corrected camera calibration
-	#ifdef _USE_CORRECTED_CAMERA
+	// Set up corrected camera calibration (un-distortion).
+	#ifdef _USE_CORRECTED_CAMERA // (...which is true, BTW)
+    
 		// We are undistorting the camera.
+        // Load the meta-undistortion settings.
 		ofxCv::FileStorage settings (ofToDataPath("settingsForCameraCalibrator.yml"), ofxCv::FileStorage::READ);
-		if(settings.isOpened()) {
+		if (settings.isOpened()) {
 			
-			// needed if not calibrating??
+			// Is this needed if we're not calibrating??
 			int patternXCount = settings["patternXCount"];
 			int patternYCount = settings["patternYCount"];
 			myCalibration.setPatternSize(patternXCount, patternYCount);
@@ -384,6 +376,7 @@ void ofApp::initializeCameraCalibration(){
 			myCalibration.setPatternType(patternType);
 		}
 		
+        // Load the actual (calibrated) undistortion parameters.
 		ofxCv::FileStorage prevCalibrationFile (ofToDataPath("calibration.yml"), ofxCv::FileStorage::READ);
 		if (prevCalibrationFile.isOpened()){
 			prevCalibrationFile.release();
@@ -440,7 +433,7 @@ void ofApp::setupGui() {
 	gui1->setName("GUI1");
 	gui1->addLabel("Image Processing");
 	
-	gui1->loadSettings(originalAppDataPath + "HandSegmenterSettings.xml");
+	gui1->loadSettings(originalAppDataPath + "HandArtworkSettings1.xml");
 	
 	gui1->addSpacer();
 	gui1->addIntSlider("thresholdValue",		0, 128,		&thresholdValue);
@@ -449,11 +442,16 @@ void ofApp::setupGui() {
 	gui1->addLabelToggle("bUseGradientThreshold",			&bUseGradientThreshold);
 	
 	gui1->addValuePlotter("averageSkinLuminance", 256,	0.00, 255.0, &averageSkinLuminance, 32);
-	gui1->addSlider("averageSkinLuminance",		0, 255,   &averageSkinLuminance);
+	gui1->addSlider("averageSkinLuminance",		0, 255,		&averageSkinLuminance);
+    gui1->addSlider("maxPossibleSkinLuma", 0, 255, &maxPossibleSkinLuma );
+    gui1->addSlider("minPossibleSkinLuma", 0, 255, &minPossibleSkinLuma );
+    gui1->addSlider("skinLumaPowf",  0, 4, &skinLumaPowf );
+    gui1->addSlider("maxSkinThresh", 0, 255, &maxSkinThresh );
+    gui1->addSlider("minSkinThresh", 0, 255, &minSkinThresh );
 
-	gui1->addLabelToggle("bUseRedChannelForLuminance",	&bUseRedChannelForLuminance);
-	gui1->addLabelToggle("bDoAdaptiveThresholding",		&bDoAdaptiveThresholding);
-	gui1->addLabelToggle("bDoMorphologicalOps",			&bDoMorphologicalOps);
+	gui1->addLabelToggle("bUseRedChannelForLuminance",		&bUseRedChannelForLuminance);
+	gui1->addLabelToggle("bDoAdaptiveThresholding",			&bDoAdaptiveThresholding);
+	gui1->addLabelToggle("bDoMorphologicalOps",				&bDoMorphologicalOps);
 	
 	gui1->addSpacer();
 	gui1->addSlider("HCA-thresholdValue", 0.0, 128.0,       &(myHandContourAnalyzer.thresholdValue));
@@ -462,9 +460,7 @@ void ofApp::setupGui() {
 	gui1->addSlider("HCA-lineBelongingTolerance", 0, 64,	&(myHandContourAnalyzer.lineBelongingTolerance));
 	gui1->addSlider("HCA-perpendicularSearch", 0.0, 0.5,	&(myHandContourAnalyzer.perpendicularSearch));
 	
-
-
-	gui1->loadSettings(originalAppDataPath + "HandSegmenterSettings.xml");
+	gui1->loadSettings(originalAppDataPath + "HandArtworkSettings1.xml");
 	gui1->autoSizeToFitWidgets();
 	ofAddListener(gui1->newGUIEvent,this,&ofApp::guiEvent);
 	guiTabBar->addCanvas(gui1);
@@ -483,8 +479,8 @@ void ofApp::setupGui() {
 	gui2->addSlider("crotchContourSearchMask", 0.0, 0.5,    &(myHandContourAnalyzer.crotchContourSearchTukeyMaskPct));
     
     gui2->addSpacer();
-    gui2->addSlider("minCrotchQuality", 0.0, 0.30,              &(myHandContourAnalyzer.minCrotchQuality));
-    gui2->addSlider("malorientationSuppression", 0.0, 1.0,      &(myHandContourAnalyzer.malorientationSuppression));
+    gui2->addSlider("minCrotchQuality", 0.0, 0.30,			&(myHandContourAnalyzer.minCrotchQuality));
+    gui2->addSlider("malorientationSuppression", 0.0, 1.0,	&(myHandContourAnalyzer.malorientationSuppression));
 	
 	gui2->autoSizeToFitWidgets();
 	ofAddListener(gui2->newGUIEvent,this,&ofApp::guiEvent);
@@ -523,12 +519,13 @@ void ofApp::setupGui() {
     
     //------------------------------------
     // GUI for WHAT TO DRAW & HOW TO DRAW IT
+    //
     ofxUICanvas* gui4 = new ofxUICanvas();
-    gui4->setName("GUI4");
+    gui4->setName ("GUI4");
     gui4->addLabel("What to Render");
 	gui4->addToggle("bUseBothTypesOfScenes",			&bUseBothTypesOfScenes);
-	gui4->addToggle("useTopologyModifierManager",		&useTopologyModifierManager);
-	gui4->addIntSlider("nTolerableTriangleIntersections", 0, 500,			&(myHandMeshBuilder.nTolerableTriangleIntersections));
+	gui4->addToggle("useTopologyModifierManager",		&bUseTopologyModifierManager);
+	gui4->addIntSlider("nTolerableTriangleIntersections", 0, 500,	&(myHandMeshBuilder.nTolerableTriangleIntersections));
 
     gui4->addSlider("backgroundGray", 0,255,            &backgroundGray); // slider
 	gui4->addLabelToggle("bDrawImageInBackground",		&bDrawImageInBackground);
@@ -541,7 +538,8 @@ void ofApp::setupGui() {
     gui4->addLabelToggle("bDrawMiniImages",             &bDrawMiniImages,               false, true);
     gui4->addLabelToggle("bShowText",                   &bShowText,                     false, true);
     gui4->addLabelToggle("bDrawAppFaultDebugText",      &bDrawAppFaultDebugText,        false, true);
-    gui4->addLabelToggle("bDrawGradientOverlay",      &bDrawGradient,        false, true);
+    gui4->addLabelToggle("bDrawGradientOverlay",		&bDrawGradient,					false, true);
+	gui4->addLabelToggle("bDrawFaultFeedback",			&bDrawFaultFeedback,			false, true);
 
     gui4->addSpacer();
     gui4->addLabelToggle("bDrawContourAnalyzer",        &bDrawContourAnalyzer,          false, true);
@@ -621,19 +619,25 @@ void ofApp::update(){
 	elapsedMicros = 0.8*elapsedMicros + 0.2*elapsedMicrosThisFrame;
 	elapsedMicrosInt = (int) elapsedMicros;
 	
-	bool bMeshesAreProbablyOK = (appFaultManager.doCurrentFaultsIndicateLikelihoodOfBadMeshes() == false);
+    bool bMeshesAreProbablyOK = true;
+    if (bEnableAppFaultManager){
+        bMeshesAreProbablyOK =
+            (appFaultManager.doCurrentFaultsIndicateLikelihoodOfBadMeshes() == false);
+    }
+    
 	if (bSuccessfullyBuiltMesh && bMeshesAreProbablyOK){
 		
 		if (bUseBothTypesOfScenes){
 			// mix topo and regular.
 			
-			if (currentSceneID < 2){
-				useTopologyModifierManager = true;
+            int nTopoScenes = myTopologyModifierManager.getSceneCount();
+			if (currentSceneID < nTopoScenes){
+				bUseTopologyModifierManager = true;
 				myTopologyModifierManager.update (myHandMeshBuilder);
 				myPuppetManager.updatePuppeteerDummy();
 				//myHandMeshBuilder.nTolerableTriangleIntersections = 20;
 			} else {
-				useTopologyModifierManager = false;
+				bUseTopologyModifierManager = false;
 				myPuppetManager.updatePuppeteer (bComputeAndDisplayPuppet, myHandMeshBuilder);
 				//myHandMeshBuilder.nTolerableTriangleIntersections = 500;
 			}
@@ -641,7 +645,7 @@ void ofApp::update(){
 		} else {
 			// We're selecting between topo and regular.
 			// Update all aspects of the puppet geometry
-			if (useTopologyModifierManager) {
+			if (bUseTopologyModifierManager) {
 				myTopologyModifierManager.update (myHandMeshBuilder);
 			} else {
 				myPuppetManager.updatePuppeteer (bComputeAndDisplayPuppet, myHandMeshBuilder);
@@ -649,22 +653,39 @@ void ofApp::update(){
 		}
 	}
     
-    // check if we are in idle mode
-    if(appFaultManager.getHasFault(FAULT_NO_USER_PRESENT_LONG) && leap.getLeapHands().size() == 0){
+    //-----------------------------------
+    // Determine and manage "idle mode" behavior.
+    // If there are no hands for a while, switch to idle mode.
+    
+    int numberOfHandsPresent = leap.getLeapHands().size();
+    bool bThereAreHandsPresent = (numberOfHandsPresent > 0);
+    bool bThereAreNoHandsPresent = (numberOfHandsPresent == 0);
+    
+    bool bNoUserForAWhile = false;
+    if (bEnableAppFaultManager){
+        bNoUserForAWhile = appFaultManager.getHasFault(FAULT_NO_USER_PRESENT_LONG);
+    }
+    
+    if (bNoUserForAWhile && bThereAreNoHandsPresent){
         bInPlaybackMode = true;
         playing = true;
         myPuppetManager.bInIdleMode = true;
         bInIdleMode = true;
         // cout << "leap hands" << leap.getLeapHands().size() << endl;
-        //cout << "IDLE MODE ON" << endl;
-        // set puppet darw mode and alpha
-    }else if( leap.getLeapHands().size() > 0 && bInPlaybackMode){
+        // cout << "IDLE MODE ON" << endl;
+        // set puppet draw mode and alpha
+        //
+    } else if (bThereAreHandsPresent && bInPlaybackMode){
         bInPlaybackMode = false;
         myPuppetManager.bInIdleMode = false;
         bInIdleMode = false;
-
     }
     
+    if(bInIdleMode && !bInIdleModePrev) {
+        backgroundImage.setFromPixels(processFrameImg.getPixelsRef());
+        backgroundImage.update();
+    }
+    bInIdleModePrev = bInIdleMode;
 }
 
 
@@ -984,13 +1005,13 @@ void ofApp::computeThresholdFromSkinColor(){
 		averageSkinLuminance = skinLumA*averageSkinLuminance + skinLumB*average;
 		
 		// Modify thresholdValue based on average luminance.
-		float maxSkinLum = 200;
-		float minSkinLum = 70;
-		float maxThresh = 38; // light skin
-		float minThresh = 20; // dark skin
+        float maxSkinLum = maxPossibleSkinLuma; //170;
+        float minSkinLum = minPossibleSkinLuma; //40;
+        float maxThresh =  maxSkinThresh; //38; // light skin
+        float minThresh =  minSkinThresh; //20; // dark skin
 		
 		float averageSkinLuminance01 = ofMap (averageSkinLuminance, minSkinLum,maxSkinLum, 0,1);
-		averageSkinLuminance01 = powf(averageSkinLuminance01, 1.25);
+        averageSkinLuminance01 = powf(averageSkinLuminance01, skinLumaPowf); //1.25);
 		
 		thresholdValue		= ofMap (averageSkinLuminance01, 0,1, minThresh,maxThresh);
 		thresholdValue		= ofClamp(thresholdValue, minThresh,maxThresh);
@@ -1313,25 +1334,27 @@ void ofApp::draw(){
     //-----------------------------------
     // 1. DEBUGVIEW: DIAGNOSTICS & CONTROLS FOR DEVS
 	guiTabBar->setPosition(20,20);
+    int nTopoScenes = myTopologyModifierManager.getSceneCount();
 	
 	// set puppet or topology modifier gui visibility
     if(guiTabBar->isVisible()) {
 		
 		
 		if (bUseBothTypesOfScenes){
-			if (currentSceneID < 2){
-				useTopologyModifierManager = true;
+            
+			if (currentSceneID < nTopoScenes){
+				bUseTopologyModifierManager = true;
 				myTopologyModifierManager.setGuiVisibility(true);
 				myPuppetManager.setGuiVisibility(false);
 			} else {
-				useTopologyModifierManager = false;
+				bUseTopologyModifierManager = false;
 				myPuppetManager.setGuiVisibility(true);
 				myTopologyModifierManager.setGuiVisibility(false);
 			}
 			
 		} else {
 			
-			if(useTopologyModifierManager) {
+			if(bUseTopologyModifierManager) {
 				myTopologyModifierManager.setGuiVisibility(true);
 				myPuppetManager.setGuiVisibility(false);
 			} else {
@@ -1376,7 +1399,12 @@ void ofApp::draw(){
         
         bool bEverythingIsAwesome = false;
         bool bCalculatedMesh = bSuccessfullyBuiltMesh; //myHandMeshBuilder.bCalculatedMesh;
-		bool bMeshesAreProbablyOK = (appFaultManager.doCurrentFaultsIndicateLikelihoodOfBadMeshes() == false);
+        
+        bool bMeshesAreProbablyOK = true;
+        if (bEnableAppFaultManager){
+            bMeshesAreProbablyOK =
+                (appFaultManager.doCurrentFaultsIndicateLikelihoodOfBadMeshes() == false);
+        }
 	
         bEverythingIsAwesome = bCalculatedMesh && bMeshesAreProbablyOK;
         
@@ -1396,15 +1424,17 @@ void ofApp::draw(){
             //
 			// Before we show the puppet, however, show an image in the background if desired.
 			if (bDrawImageInBackground){
+                ofPushStyle();
 				ofPushMatrix();
                     float bgScale = puppetDisplayScale * 1.0;
                     float ox = ofGetWindowWidth()      - cameraWidth*bgScale;
                     float oy = ofGetWindowHeight()/2.0 - cameraHeight*bgScale/2.0;
                     ofTranslate( ox, oy, 0);
                     ofScale (bgScale, bgScale);
-                    ofSetColor(255,255,255);
+                    ofSetColor(255);
                     backgroundImage.draw(0,0, 1024,768);
 				ofPopMatrix();
+                ofPopStyle();
 			}
 			
             // Position the right edge of the puppet at the right edge of the window.
@@ -1423,17 +1453,17 @@ void ofApp::draw(){
 			
 			if (bUseBothTypesOfScenes){
 				// mix topo and regular.
-				if (currentSceneID < 2){
-					useTopologyModifierManager = true;
+				if (currentSceneID < nTopoScenes){
+					bUseTopologyModifierManager = true;
 					myTopologyModifierManager.draw(handImageTexture);
 				} else {
-					useTopologyModifierManager = false;
+					bUseTopologyModifierManager = false;
 					myPuppetManager.drawPuppet(bComputeAndDisplayPuppet, handImageTexture);
 				}
 				
 			} else {
 				// We're selecting between topo and regular.
-				if (useTopologyModifierManager) {
+				if (bUseTopologyModifierManager) {
 					myTopologyModifierManager.draw (handImageTexture);
 				} else {
 					// Draw the puppet.
@@ -1452,8 +1482,6 @@ void ofApp::draw(){
 				// We show it at full (1024x768) resolution, and we include its own natural background.
 				// Note: the image needs to be scaled by puppetscale, or else there is scale-flipping.
 				//
-				
-				
 				
                 if (bInIdleMode && bKioskMode){
 					
@@ -1543,21 +1571,16 @@ void ofApp::draw(){
     // rotated for the user's perspective
     
     // Application state manager feedbacK:
-    if (bDrawAppFaultDebugText){
-        appFaultManager.drawDebug(ofGetWidth()-200,20); // shows all active faults as debug text
+    if (bEnableAppFaultManager){
+        if (bDrawAppFaultDebugText){
+            appFaultManager.drawDebug(ofGetWidth()-200,20);
+            // shows all active faults as debug text
+        }
+        if (bDrawFaultFeedback){
+            appFaultManager.drawFaultHelpScreen();
+        }
     }
-    appFaultManager.drawFaultHelpScreen();
 	
-    
-    float handTooHighDur = myAppFaultManager.getDurationOfFault (FAULT_HAND_TOO_HIGH);
-    //handTooHighDur = ofClamp(handTooHighDur, 0,3);
-    //float col = ofMap(handTooHighDur, 0,3, 0,1);
-    //col = 255.0 * powf (col, 4.0);
-    
-	// ofFill();
-	// ofSetColor(col);
-	// ofRect(mouseX, mouseY, 80,80) ;
-	// printf("handTooHighDur = %f     col = %f \n", handTooHighDur, col);
 		
 	if( bDrawGradient ) drawGradientOverlay();
 	updateDataSampleGrabbingProcess();
@@ -1569,48 +1592,54 @@ void ofApp::draw(){
 void ofApp::updateDataSampleGrabbingProcess(){
 	if (bDataSampleGrabbingEnabled && !bRecording && !bInPlaybackMode){
 		bool bCalculatedMesh = bSuccessfullyBuiltMesh;
-		bool bMeshesAreProbablyOK = (appFaultManager.doCurrentFaultsIndicateLikelihoodOfBadMeshes() == false);
+        
+        bool bMeshesAreProbablyOK = true;
+        if (bEnableAppFaultManager){
+            bMeshesAreProbablyOK = (appFaultManager.doCurrentFaultsIndicateLikelihoodOfBadMeshes() == false);
+        }
+        
 		if (bCalculatedMesh && bMeshesAreProbablyOK){
-			
-			long now = ofGetElapsedTimeMillis();
-			int elapsed = (int)(now - lastDataSampleGrabTimeMillis);
-			if (elapsed >= dataSampleGrabIntervalMillis){
-				
-				string strY = ofToString (ofGetYear());
-				string strN = ofToString (ofGetMonth());
-				string strD = ofToString (ofGetDay());
-				string strH = ofToString (ofGetHours());
-				string strM = ofToString (ofGetMinutes());
-				string strS = ofToString (ofGetSeconds());
-				
-				if (ofGetMonth()   < 10) { strN = "0" + strN; }
-				if (ofGetDay()     < 10) { strD = "0" + strD; }
-				if (ofGetHours()   < 10) { strH = "0" + strH; }
-				if (ofGetMinutes() < 10) { strM = "0" + strM; }
-				if (ofGetSeconds() < 10) { strS = "0" + strS; }
-				
-				string dateString = strY + strN + strD;
-				
-				string filename = "samples/" + dateString + "/sample_";
-				filename += strH;
-				filename += strM;
-				filename += strS;
-				
-				// 1. Record the mesh as a .PLY file.
-				myHandMeshBuilder.getMesh().save(filename + ".ply");
-				
-				// 2. Record the image as a .JPG file.
-				dataSampleImg.setFromPixels( video.getPixels(), cameraWidth, cameraHeight, OF_IMAGE_COLOR);
-				dataSampleImg.saveImage(filename + ".jpg", OF_IMAGE_QUALITY_HIGH);
-				
-				// 3. Record the LEAP data as an .XML file.
-				leapRecorder.startRecording();
-				leapRecorder.recordFrameXML(leap);
-				leapRecorder.endRecording(filename + ".xml");
-				
-				//bInPlaybackMode
-				lastDataSampleGrabTimeMillis = now;
-			}
+        
+            long now = ofGetElapsedTimeMillis();
+            int elapsed = (int)(now - lastDataSampleGrabTimeMillis);
+            if (elapsed >= dataSampleGrabIntervalMillis){
+                
+                string strY = ofToString (ofGetYear());
+                string strN = ofToString (ofGetMonth());
+                string strD = ofToString (ofGetDay());
+                string strH = ofToString (ofGetHours());
+                string strM = ofToString (ofGetMinutes());
+                string strS = ofToString (ofGetSeconds());
+                
+                if (ofGetMonth()   < 10) { strN = "0" + strN; }
+                if (ofGetDay()     < 10) { strD = "0" + strD; }
+                if (ofGetHours()   < 10) { strH = "0" + strH; }
+                if (ofGetMinutes() < 10) { strM = "0" + strM; }
+                if (ofGetSeconds() < 10) { strS = "0" + strS; }
+                
+                string dateString = strY + strN + strD;
+                
+                string filename = "samples/" + dateString + "/sample_";
+                filename += strH;
+                filename += strM;
+                filename += strS;
+                
+                // 1. Record the mesh as a .PLY file.
+                myHandMeshBuilder.getMesh().save(filename + ".ply");
+                
+                // 2. Record the image as a .JPG file.
+                dataSampleImg.setFromPixels( colorVideo.getPixels(), cameraWidth, cameraHeight, OF_IMAGE_COLOR);
+                dataSampleImg.saveImage(filename + ".jpg", OF_IMAGE_QUALITY_HIGH);
+                
+                // 3. Record the LEAP data as an .XML file.
+                leapRecorder.startRecording();
+                leapRecorder.recordFrameXML(leap);
+                leapRecorder.endRecording(filename + ".xml");
+                
+                //bInPlaybackMode
+                lastDataSampleGrabTimeMillis = now;
+            }
+            
 		}
 	}
 }
@@ -1785,153 +1814,131 @@ void ofApp::applicationStateMachine(){
 	bool	bLeapIsConnected		= leap.isConnected();
 	int		nLeapHandsInScene		= leapVisualizer.nLeapHandsInScene;
 	
+	
+	
     //------- update time each fault has occurred
     
     // no user present
-    if(nBlobsInScene == 0 || (bInPlaybackMode && bKioskMode) ){
-        appFaultManager.updateHasFault(FAULT_NO_USER_PRESENT_BRIEF,dt);
-        appFaultManager.updateHasFault(FAULT_NO_USER_PRESENT_LONG,dt);
-    }else{
-        appFaultManager.updateResetFault(FAULT_NO_USER_PRESENT_BRIEF);
-        appFaultManager.updateResetFault(FAULT_NO_USER_PRESENT_LONG);
-    }
+    if (bEnableAppFaultManager){
+        if (nBlobsInScene == 0 || (bInPlaybackMode && bKioskMode) ){
+            appFaultManager.updateHasFault(FAULT_NO_USER_PRESENT_BRIEF,dt);
+            appFaultManager.updateHasFault(FAULT_NO_USER_PRESENT_LONG,dt);
+        } else {
+            appFaultManager.updateResetFault(FAULT_NO_USER_PRESENT_BRIEF);
+            appFaultManager.updateResetFault(FAULT_NO_USER_PRESENT_LONG);
+        }
     
-    // things we need to know:
-	bool bSomethingIsPresentInCamera;
-	// high values of distanceOfBlobFromEntry indicate either (A) bad thresholding or (B) object in scene.
-	// An object is in the scene:
-	// -- does not move (is stationary)
-	// -- no hand in leap
-	// -- area is larger than minRecognizeableObject area
-	// -- nBlobsInScene is > 0
-    
-    // TODO: put this distanceOfBlobFromEntry threshold in gui
-    if( nBlobsInScene > 0 &&
-       nLeapHandsInScene == 0 &&
-       distanceOfBlobFromEntry > 100 &&
-       amountOfLeapMotion01 < .5*maxAllowableMotion ){
+        // things we need to know:
+        // high values of distanceOfBlobFromEntry indicate either (A) bad thresholding or (B) object in scene.
+        // An object is in the scene:
+        // -- does not move (is stationary)
+        // -- no hand in leap
+        // -- area is larger than minRecognizeableObject area
+        // -- nBlobsInScene is > 0
         
-        appFaultManager.updateHasFault(FAULT_NO_LEAP_OBJECT_PRESENT,dt);
         
-    } else{
-        appFaultManager.updateResetFault(FAULT_NO_LEAP_OBJECT_PRESENT);
-    }
+        // TODO: put this distanceOfBlobFromEntry threshold in gui
+        if (nBlobsInScene > 0 &&
+           nLeapHandsInScene == 0 &&
+           distanceOfBlobFromEntry > 100 &&
+           amountOfLeapMotion01 < .5*maxAllowableMotion ){
+            
+            appFaultManager.updateHasFault(FAULT_NO_LEAP_OBJECT_PRESENT,dt);
+        } else {
+            appFaultManager.updateResetFault(FAULT_NO_LEAP_OBJECT_PRESENT);
+        }
+
+        
+        // no leap hands
+        if (nLeapHandsInScene == 0 && nBlobsInScene > 0){
+            appFaultManager.updateHasFault (FAULT_LEAP_DROPPED_FRAME, dt);
+        } else {
+            appFaultManager.updateResetFault (FAULT_LEAP_DROPPED_FRAME);
+        }
     
     
-    // no leap hands
-    if (nLeapHandsInScene == 0 && nBlobsInScene > 0){
-        appFaultManager.updateHasFault (FAULT_LEAP_DROPPED_FRAME, dt);
-    } else {
-        appFaultManager.updateResetFault(FAULT_LEAP_DROPPED_FRAME);
-    }
+        // too many hands
+        if (nLeapHandsInScene > 1){
+            appFaultManager.updateHasFault (FAULT_TOO_MANY_HANDS, dt);
+        } else {
+            appFaultManager.updateResetFault(FAULT_TOO_MANY_HANDS);
+        }
     
-    // too many hands
-    if (nLeapHandsInScene > 1){
-        appFaultManager.updateHasFault (FAULT_TOO_MANY_HANDS, dt);
-    } else {
-        appFaultManager.updateResetFault(FAULT_TOO_MANY_HANDS);
-    }
+        
+        // hands too fast
+        if (amountOfLeapMotion01 > maxAllowableMotion){
+            appFaultManager.updateHasFault (FAULT_HAND_TOO_FAST, dt);
+        } else {
+            appFaultManager.updateResetFault (FAULT_HAND_TOO_FAST);
+        }
     
-    // hands too fast
-    if (amountOfLeapMotion01 > maxAllowableMotion){
-        appFaultManager.updateHasFault (FAULT_HAND_TOO_FAST, dt);
-    } else {
-        appFaultManager.updateResetFault (FAULT_HAND_TOO_FAST);
-    }
+        
+        // hand too curled
+        if (amountOfFingerCurl01 > maxAllowableFingerCurl){
+            appFaultManager.updateHasFault (FAULT_HAND_TOO_CURLED, dt);
+        } else {
+            appFaultManager.updateResetFault (FAULT_HAND_TOO_CURLED);
+        }
     
-    // hand too curled
-    if (amountOfFingerCurl01 > maxAllowableFingerCurl){
-        appFaultManager.updateHasFault (FAULT_HAND_TOO_CURLED, dt);
-    } else {
-        appFaultManager.updateResetFault (FAULT_HAND_TOO_CURLED);
-    }
+        
+        // hand too vertical, e.g.: thumb above pinky
+        if (zHandExtent > maxAllowableExtentZ){
+            appFaultManager.updateHasFault (FAULT_HAND_TOO_VERTICAL, dt);
+        } else {
+            appFaultManager.updateResetFault (FAULT_HAND_TOO_VERTICAL);
+        }
     
-    // hand too vertical, e.g.: thumb above pinky
-    if (zHandExtent > maxAllowableExtentZ){
-        appFaultManager.updateHasFault (FAULT_HAND_TOO_VERTICAL, dt);
-    } else {
-        appFaultManager.updateResetFault (FAULT_HAND_TOO_VERTICAL);
-    }
-    
-    // hand too high, i.e. too close to camera
-    float zHandHeightReportedWhenNoHandsPresent = 100.0;
-    float zCeil = zHandHeightReportedWhenNoHandsPresent/2.0;
-    if ((zHandHeight > maxAllowableHeightZ) && (zHandHeight < zCeil)){
-        appFaultManager.updateHasFault (FAULT_HAND_TOO_HIGH, dt);
-    } else {
-        appFaultManager.updateResetFault (FAULT_HAND_TOO_HIGH);
-    }
-    
-    // not deep enough
-    if (insertionPercentage < minHandInsertionPercent && nBlobsInScene > 0){
-        appFaultManager.updateHasFault (FAULT_HAND_NOT_DEEP_ENOUGH, dt);
-    } else {
-        appFaultManager.updateResetFault (FAULT_HAND_NOT_DEEP_ENOUGH);
-    }
-    
-    
-    // scene on too long
-    if( ofGetElapsedTimef() - myPuppetManager.sceneStartTime > 50 ){
-        appFaultManager.updateHasFault (FAULT_SAME_SCENE_TOO_LONG, dt);
-    }else{
-        appFaultManager.updateResetFault(FAULT_SAME_SCENE_TOO_LONG);
-    }
-    
-    // get all detected faults
-    vector<ApplicationFault> faults = appFaultManager.getAllFaults();
-    
-    // get longest fault detected
-    ApplicationFault longFault = appFaultManager.getLongestFault();
-    
+        
+        // hand too high, i.e. too close to camera
+        float zHandHeightReportedWhenNoHandsPresent = 100.0;
+        float zCeil = zHandHeightReportedWhenNoHandsPresent/2.0;
+        if ((zHandHeight > maxAllowableHeightZ) && (zHandHeight < zCeil)){
+            appFaultManager.updateHasFault (FAULT_HAND_TOO_HIGH, dt);
+        } else {
+            appFaultManager.updateResetFault (FAULT_HAND_TOO_HIGH);
+        }
+        
+        
+        // not deep enough
+        if (insertionPercentage < minHandInsertionPercent && nBlobsInScene > 0){
+            appFaultManager.updateHasFault (FAULT_HAND_NOT_DEEP_ENOUGH, dt);
+        } else {
+            appFaultManager.updateResetFault (FAULT_HAND_NOT_DEEP_ENOUGH);
+        }
+        
+        
+        // scene on too long
+        if( ofGetElapsedTimef() - myPuppetManager.sceneStartTime > 50 ){
+            appFaultManager.updateHasFault (FAULT_SAME_SCENE_TOO_LONG, dt);
+        } else {
+            appFaultManager.updateResetFault(FAULT_SAME_SCENE_TOO_LONG);
+        }
 	
+        
+        // hand too small
+        float theHandContourArea = myHandContourAnalyzer.theHandContourArea;
+        float theHandContourArea01 = theHandContourArea / (float)(imgW*imgH);
+        float curlAreaRatio = (amountOfFingerCurl01 / (0.001 + theHandContourArea01));
+        if ((theHandContourArea01 < 0.09) &&
+            (insertionPercentage > 0.25) &&
+            (curlAreaRatio > 4.1)){
+            appFaultManager.updateHasFault (FAULT_NO_LEAP_HAND_TOO_SMALL, dt);
+        } else {
+            appFaultManager.updateResetFault (FAULT_NO_LEAP_HAND_TOO_SMALL);
+        }
+        // printf("theHandContourArea01 = %f\n", theHandContourArea01);
+        
+        
+        
+        // get all detected faults
+        vector<ApplicationFault> faults = appFaultManager.getAllFaults();
+        
+        // get longest fault detected
+        ApplicationFault longFault = appFaultManager.getLongestFault();
+    }
+    
 	prevTime = ofGetElapsedTimef();
-    
-
-	
 }
-
-
-/*
- Please insert your hand to begin.
- Stop je hand in het apparaat om te beginnen.
- 
- Put your hand in this zone.
- Hou je hand in dit gebied.
- 
- Touch the screen for a new scene.
- Raak het scherm aan voor een nieuwe scene.
- 
- Oops! Try moving more slowly.
- Oeps! Probeer langzamer te bewegen.
- 
- Oops! Try keeping your hand flat.
- Oeps! Probeer je hand recht te houden.
- 
- Oops! Your hand is too high up.
- Oeps! Je houdt je hand te hoog.
- 
- Hey! Just one hand at a time, please.
- Hee! Een hand tegelijk alsjeblieft.
- 
- Hey! Hold still for a moment, please.
- Hee! Hou je hand stil alsjeblieft.
- 
- I'm sorry! Your hand might be too small :(
- Het spijt me! Je hand is waarschijnlijk te klein voor mij :(
- 
- Try taking your hand out, and putting it in again.
- Probeer eens om je hand eruit te halen en deze er weer in te stoppen.
- 
- Hey! Only hands, please.
- Hee! Alleen je hand alsjeblieft.
- 
- Hey! That's not a hand.
- Hee! Dat is geen hand.
-
- */
-
-
-
 
 //--------------------------------------------------------------
 void ofApp::drawLiveForRecording(){
@@ -2199,7 +2206,7 @@ void ofApp::drawIdleContour(){
     ofPushStyle();
     
     ofSetColor(255,255,255);
-    backgroundImage.draw(0,0, 1024,768);
+    backgroundImage.draw(0,0, imgW, imgH);
 
     ofSetLineWidth(4);
     ofSetColor(25,200,255,200);
@@ -2408,18 +2415,16 @@ void ofApp::keyPressed(int key){
             
         case 'E': // export ply
             exportFrame("handmesh-" + ofToString(playingFrame));
-            break; 
-		
+            break;
+            
 		case 'P':
         case 'p':
             bComputeAndDisplayPuppet = !bComputeAndDisplayPuppet;
             break;
-        case 's':
-            leapVisualizer.bDrawSimple = !leapVisualizer.bDrawSimple;
+        case 'S':
+            
             break;
-        case 'v':
-            bUseVirtualProjector = !bUseVirtualProjector;
-            break;
+        
         case '1':
             loadPlaybackFromDialog();
             break;
@@ -2437,10 +2442,7 @@ void ofApp::keyPressed(int key){
             if(bInPlaybackMode) playing = !playing;
             else if(bRecordingForCalibration) bRecordThisCalibFrame = true;
             break;
-        case 'u':
-            bUseCorrectedCamera = !bUseCorrectedCamera;
-            break;
-
+        
 		//case 'F':
         case 'f':
             bFullscreen = !bFullscreen;
@@ -2470,7 +2472,22 @@ void ofApp::keyPressed(int key){
                 bInIdleMode = false;
             }
             break;
-            
+        
+		
+		/*
+		 // Deprecated key commands: keypress commands that are on the way out.
+		 //
+		case 'T':
+			// Captures meshes from Topo manager. Works, but disabled.
+			if (bUseTopologyModifierManager && bComputeAndDisplayPuppet){
+				// myTopologyModifierManager.saveMeshes();
+			}
+			break;
+		case 'v':
+            bUseVirtualProjector = !bUseVirtualProjector;
+            break;
+		 //
+		*/
     }
     
 }
@@ -2500,27 +2517,15 @@ void ofApp::mousePressed(int x, int y, int button){
         }
     }
     
-    swipeStart = y;
+    if (bKioskMode){
+        int dir = (y > ofGetWidth() / 2) ? -1 : +1;
+        changeScene(dir);
+    }
 }
 
 //--------------------------------------------------------------
 void ofApp::mouseReleased (int x, int y, int button){
-	
-	// If we're in kiosk mode,
-	if (bKioskMode){
-		
-		// use direction of swipe to select next scene
-		int dir = 1;
-		float dist = fabs(y-swipeStart);
-		if (dist > 20){
-			if (y > swipeStart){
-				dir = -1;
-			} else {
-				dir =  1;
-			}
-		}
-		changeScene(dir);
-	}
+
 }
 
 //--------------------------------------------------------------
@@ -2536,22 +2541,26 @@ void ofApp::changeScene (int dir){
 	
 	if (bUseBothTypesOfScenes){
 		
-		int nTopoScenes = 2;
+        int nTopoScenes = myTopologyModifierManager.getSceneCount();
 		int nPuppScenes = myPuppetManager.scenes.size();
 		int nTotalScenes = nTopoScenes + nPuppScenes;
+        //printf("nTopoScenes = %d\n", nTopoScenes);
+        //printf("nPuppScenes = %d\n", nPuppScenes);
 		
 		currentSceneID = (currentSceneID + dir + nTotalScenes)%nTotalScenes;
 		
 		// inform puppeteers
-		if ((currentSceneID == 0) || (currentSceneID == 1)){
+		if (currentSceneID < nTopoScenes){
 			myTopologyModifierManager.setScene (currentSceneID);
-			useTopologyModifierManager = true;
+			bUseTopologyModifierManager = true;
 			
 		} else {
 			int whichPuppScene = currentSceneID - nTopoScenes;
 			myPuppetManager.animateSceneChangeToGivenScene (whichPuppScene, dir);
-			useTopologyModifierManager = false;
+			bUseTopologyModifierManager = false;
 		}
+		
+		myPuppetManager.sceneStartTime = ofGetElapsedTimef();
 		
 	} else {
 		
@@ -2650,3 +2659,24 @@ void ofApp::huntForBlendFunc(int period, int defaultSid, int defaultDid){
 	
 }
 
+
+/*
+ // HTML Acknowlegments
+ 
+ 
+ <b>UNTITLED DIGITAL ART (AUGMENTED HAND SERIES)</b>
+ By <a href="http://flong.com" rel="nofollow">Golan Levin</a>, <a href="http://csugrue.com/" rel="nofollow">Chris Sugrue</a>, and <a href="http://kylemcdonald.net/" rel="nofollow">Kyle McDonald</a>
+ Repository: <a href="https://github.com/CreativeInquiry/digital_art_2014" rel="nofollow">github.com/CreativeInquiry/digital_art_2014</a>
+ Contact: <a href="https://twitter.com/golan" rel="nofollow">@golan</a> or golan@flong.com
+ 
+ Photos © by <a href="http://www.fotogeus.nl/" rel="nofollow">Gerlinde de Geus</a>, courtesy Cinekid Festival.
+ 
+ Commissioned by the <a href="http://www.cinekid.nl/" rel="nofollow">Cinekid Festival</a>, Amsterdam, October 2014, with support from the Mondriaan Fund for visual art. Developed at the <a href="http://studioforcreativeinquiry.org" rel="nofollow">Frank-Ratchye STUDIO for Creative Inquiry</a> at Carnegie Mellon University with additional support from the <a href="http://www.arts.pa.gov/" rel="nofollow">Pennsylvania Council on the Arts</a> and the <a href="http://studioforcreativeinquiry.org/grants" rel="nofollow">Frank-Ratchye Fund for Art @ the Frontier</a>. Concept and software development: Golan Levin, Chris Sugrue, Kyle McDonald. Software assistance: Dan Wilcox, Bryce Summers, Erica Lazrus. Conceived 2005; developed 2013-2014.
+ 
+ Special thanks to Paulien Dresscher, Theo Watson and Eyeo Festival for encouragement, and to Dan Wilcox, Bryce Summers, and Erica Lazrus for their help making this project possible. Thanks to Elliot Woods and Simon Sarginson for assistance with Leap/camera calibration, and to Adam Carlucci for his <a href="http://forum.openframeworks.cc/t/a-guide-to-speeding-up-your-of-app-with-accelerate-osx-ios/10560" rel="nofollow">helpful tutorial</a> on using the Accelerate Framework in openFrameworks. Additional thanks to Rick Barraza and Ben Lower of Microsoft; Christian Schaller and Hannes Hofmann of Metrilus GmbH; Dr. Roland Goecke of University of Canberra; and Doug Carmean and Chris Rojas of Intel.
+ 
+ Developed in <a href="http://openframeworks.cc/" rel="nofollow">openFrameworks</a> (OF), a free, open-source toolkit for arts engineering. This project also uses a number of open-source addons for openFrameworks contributed by others: <a href="https://github.com/ofZach/ofxPuppet" rel="nofollow">ofxPuppet</a> by Zach Lieberman, based on Ryan Schmidt's <a href="http://www.dgp.toronto.edu/~rms/software/Deform2D/index.html" rel="nofollow">implementation</a> of <a href="http://www-ui.is.s.u-tokyo.ac.jp/~takeo/research/rigid/index.html" rel="nofollow">As-Rigid-As-Possible Shape Manipulation</a> by Igarashi, Moscovich & Hughes; <a href="https://github.com/ofTheo/ofxLeapMotion" rel="nofollow">ofxLeapMotion</a> by Theo Watson, with assistance from Dan Wilcox; <a href="https://github.com/kylemcdonald/ofxCv" rel="nofollow">ofxCv</a>, <a href="https://github.com/kylemcdonald/ofxLibdc" rel="nofollow">ofxLibdc</a>, and <a href="https://github.com/kylemcdonald/ofxTiming" rel="nofollow">ofxTiming</a> by Kyle McDonald; <a href="https://github.com/elliotwoods/ofxCvMin" rel="nofollow">ofxCvMin</a> and <a href="https://github.com/elliotwoods/ofxRay" rel="nofollow">ofxRay</a> by Elliot Woods; and the <a href="https://github.com/Bryce-Summers/ofxButterfly" rel="nofollow">ofxButterfly</a> mesh subdivision addon by Bryce Summers.
+ 
+ <i>Shoutouts from @golan @chrissugrue & @kcimc: @admsyn @bla_fasel @bwycz @cinekid @CMUSchoolofArt @creativeinquiry @danomatika @elliotwoods @eyeofestival @laurmccarthy @openframeworks @PESfilm @rickbarraza @SimonsMine @theowatson @zachlieberman</i>
+
+*/
