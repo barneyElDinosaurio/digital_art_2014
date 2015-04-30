@@ -8,6 +8,7 @@
 #include "ofxCv.h"
 #include "ofxCvMin.h"
 #include "ofxLibdc.h"
+#include "DelayTimer.h"
 
 #include "LeapFrame.h"
 #include "BufferedVideo.h"
@@ -104,6 +105,8 @@ class ofApp : public ofBaseApp{
     //------------------------------
 	// For recording the CAMERA.
 	void initializeCamera();
+    void exportFrame(string filename = "");
+    DelayTimer exportTimer;
 	ofxLibdc::PointGrey cameraLibdc;
 	ofVideoGrabber cameraVidGrabber;
 	float cameraLibdcShutterInv;

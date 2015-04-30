@@ -104,7 +104,7 @@ void ofApp::setup(){
 	
     initializeCamera();
 	initializeCameraCalibration();
-	
+    exportTimer.setPeriod(5);
     
     //--------------- Setup video saver
 	bRecording = false;
@@ -1387,6 +1387,11 @@ void ofApp::draw(){
     
         if (bEverythingIsAwesome){
             
+            if(exportTimer.tick()) {
+                string filename = "samples/" + ofGetTimestampString();
+                exportFrame(filename);
+            }
+            
             // ALL GOOD! SHOW THE PUPPET!
             //
 			// Before we show the puppet, however, show an image in the background if desired.
@@ -2329,6 +2334,14 @@ bool ofApp::useCorrectedCam(){
 	#endif
 }
 
+void ofApp::exportFrame(string filename) {
+    ofImage img;
+    myHandMeshBuilder.getMesh().save(filename + ".ply");
+    img.allocate(cameraWidth, cameraHeight, OF_IMAGE_COLOR);
+    img.setFromPixels(video.getPixels(), cameraWidth, cameraHeight, OF_IMAGE_COLOR);
+    img.saveImage(filename + ".jpg");
+}
+
 //--------------------------------------------------------------
 void ofApp::keyPressed(int key){
 
@@ -2352,8 +2365,6 @@ void ofApp::keyPressed(int key){
 		}
 	
 	}
-    
-    ofImage img;
     
     switch(key){
         case OF_KEY_LEFT:
@@ -2396,10 +2407,7 @@ void ofApp::keyPressed(int key){
             break;
             
         case 'E': // export ply
-            myHandMeshBuilder.getMesh().save("handmesh-" + ofToString(playingFrame) + ".ply");
-            img.allocate(cameraWidth, cameraHeight, OF_IMAGE_COLOR);
-            img.setFromPixels( video.getPixels(), cameraWidth, cameraHeight, OF_IMAGE_COLOR);
-            img.saveImage( "handmesh-" + ofToString(playingFrame) + ".jpg");
+            exportFrame("handmesh-" + ofToString(playingFrame));
             break; 
 		
 		case 'P':
