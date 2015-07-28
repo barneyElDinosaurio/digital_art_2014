@@ -13,7 +13,7 @@
  
  Developed in openFrameworks (OF), a free, open-source toolkit for arts engineering. This project also uses a number of open-source addons for openFrameworks contributed by others: ofxPuppet by Zach Lieberman, based on Ryan Schmidt's implementation of As-Rigid-As-Possible Shape Manipulation by Igarashi, Moscovich & Hughes; ofxLeapMotion by Theo Watson, with assistance from Dan Wilcox; ofxCv, ofxLibdc, and ofxTiming by Kyle McDonald; ofxCvMin and ofxRay by Elliot Woods; and the ofxButterfly mesh subdivision addon by Bryce Summers.
  
- Shoutouts from @golan @chrissugrue & @kcimc: @admsyn @bla_fasel @bwycz @cinekid @CMUSchoolofArt @creativeinquiry @danomatika @elliotwoods @eyeofestival @laurmccarthy @openframeworks @PESfilm @rickbarraza @SimonsMine @theowatson @zachlieberman
+ Shoutouts from @golan @chrissugrue & @kcimc: @admsyn @bla_fasel @bwycz @cinekid @CMUSchoolofArt @creativeinquiry @danomatika @elliotwoods @eyeofestival @laurmccarthy @openframeworks @PESfilm @rickbarraza @SimonsMine @theowatson @zachlieberman @workergnome
  
 */
 
