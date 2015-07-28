@@ -1,4 +1,9 @@
-SharedData/*
+SharedData/recordings
+SharedData/samples
+SharedData/masks
+SharedData/continuous
+
+
 SharedData2013/*
 
 .svn
