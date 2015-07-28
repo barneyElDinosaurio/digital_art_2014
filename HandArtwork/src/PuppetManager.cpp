@@ -30,6 +30,7 @@ void PuppetManager::setupPuppeteer (HandMeshBuilder &myHandMeshBuilder){
     scenes.push_back(new PulsatingPalmScene		(&puppet, &palmSkeleton, &immutablePalmSkeleton));
     scenes.push_back(new StartrekScene			(&puppet, &handSkeleton, &iHSk));
 
+    
 
     /*
 	scenes.push_back(new SinusoidalLengthScene	(&puppet, &handSkeleton, &immutableHandSkeleton));
@@ -61,6 +62,9 @@ void PuppetManager::setupPuppeteer (HandMeshBuilder &myHandMeshBuilder){
      scenes.push_back(new SpringFingers2Scene	(&puppet, &handWithFingertipsSkeleton, &immutableHandWithFingertipsSkeleton));
      scenes.push_back(new RemappedFingersScene	    (&puppet, &handWithFingertipsSkeleton, &immutableHandWithFingertipsSkeleton));
      scenes.push_back(new DelayedFingersScene	    (&puppet, &handWithFingertipsSkeleton, &immutableHandWithFingertipsSkeleton));
+     scenes.push_back(new SpasmFingersScene	    (&puppet, &handWithFingertipsSkeleton, &immutableHandWithFingertipsSkeleton));
+     
+     scenes.push_back(new TwitchScene				(&puppet, &handSkeleton, &immutableHandSkeleton));
      scenes.push_back(new SpasmFingersScene	    (&puppet, &handWithFingertipsSkeleton, &immutableHandWithFingertipsSkeleton));
     */
     

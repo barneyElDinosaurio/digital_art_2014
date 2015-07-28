@@ -1,5 +1,6 @@
 #include "ofMain.h"
 #include "ofApp.h"
+#include "ofAppGLFWWindow.h"
 
 #ifdef TARGET_OPENGLES
 #include "ofGLProgrammableRenderer.h"
@@ -13,12 +14,22 @@ int main( ){
 	#ifdef TARGET_OPENGLES
 		ofSetCurrentRenderer(ofGLProgrammableRenderer::TYPE);
 	#endif
+    
+    // NEW VERSION: TWO SCREENS
+    // See: http://forum.openframeworks.cc/t/dual-monitor-full-screen/13654
+    // be sure to go to system preferences >> mission control >> and set "Displays have separate Spaces" to false.
+    // Log out and Log in again, and it will work.
+    //
+    ofAppGLFWWindow win;
+    win.setMultiDisplayFullscreen(true); //this makes the fullscreen window span across all your monitors
+    ofSetupOpenGL(&win, 1280,800, OF_FULLSCREEN);
+    ofRunApp(new ofApp());
 	
-	ofSetupOpenGL(1280,800,OF_FULLSCREEN);			// <-------- setup the GL context
-
-	// this kicks off the running of my app
-	// can be OF_WINDOW or OF_FULLSCREEN
-	// pass in width and height too:
+    
+    /*
+    // OLD VERSION: SINGLE SCREEN
+	ofSetupOpenGL(1280,800,OF_FULLSCREEN);
 	ofRunApp(new ofApp());
+    */
 
 }

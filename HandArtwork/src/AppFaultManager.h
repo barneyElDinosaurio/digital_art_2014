@@ -39,7 +39,7 @@ public:
     void updateResetFault( ApplicationFault fault);
 
     // draw fault screens (for some faults, give user feedback visually)
-    void drawFaultHelpScreen();
+    void drawFaultHelpScreen(float px, float py, float ph);
     
     // draws faults as bitmap text with color indicating "strength" of detection of the fault
     void drawDebug(int x, int y);
@@ -69,10 +69,11 @@ public:
     ofTrueTypeFont font;
     float fontAlpha;
     ApplicationFault shownFault;
-    string myFaultString;
+    string myFaultStringEN;
     string myFaultStringNL;
     string myFaultStringDE;
     bool bShowingFault;
+    bool bUseAdditionalLanguage;
     float timeStartShowFault;
     int showFaultMode;
     int minTimeOn;

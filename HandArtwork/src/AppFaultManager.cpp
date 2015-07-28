@@ -60,13 +60,14 @@ void AppFaultManager::setup(){
     
     font.loadFont("fonts/vagrblsb.ttf", 24, true, true);
     fontAlpha = 0;
-    myFaultString = "";
+    myFaultStringEN = "";
     myFaultStringNL = "";
     myFaultStringDE = "";
     shownFault = FAULT_NOTHING_WRONG;
     timeStartShowFault = 0.f;
     showFaultMode = 0;
     minTimeOn = 6;
+    bUseAdditionalLanguage = false;
 
 }
 
@@ -198,8 +199,8 @@ bool AppFaultManager::doCurrentFaultsIndicateLikelihoodOfBadMeshes(){
 
 
 
-//===================================================================
-void AppFaultManager::drawFaultHelpScreen(){
+//========================================================================
+void AppFaultManager::drawFaultHelpScreen (float px, float py, float ph){
     
     // use priority to choose shown fault
     ApplicationFault activeFault = FAULT_NOTHING_WRONG;
@@ -225,77 +226,77 @@ void AppFaultManager::drawFaultHelpScreen(){
        // start new
         switch (activeFault) {
             case FAULT_NOTHING_WRONG:
-                myFaultString = "";
+                myFaultStringEN = "";
                 myFaultStringNL = "";
                 break;
             case FAULT_NO_USER_PRESENT_BRIEF:
-                myFaultString = "Please insert your hand to begin.";
+                myFaultStringEN = "Please insert your hand to begin.";
                 myFaultStringNL = "Stop je hand in het apparaat om te beginnen.";
                 myFaultStringDE = "Zum Starten bitte die Hand einlegen.";
                 break;
             
             case FAULT_NO_USER_PRESENT_LONG:
-                myFaultString = "Please insert your hand to begin.";
+                myFaultStringEN = "Please insert your hand to begin.";
                 myFaultStringNL = "Stop je hand in het apparaat om te beginnen.";
                 myFaultStringDE = "Zum Starten bitte die Hand einlegen.";
                 break;
             
             case FAULT_LEAP_DROPPED_FRAME:
                 // TODO: need text for dropped frame
-                myFaultString = "";
+                myFaultStringEN = "";
                 myFaultStringNL = "";
                 break;
             
             case FAULT_NO_LEAP_OBJECT_PRESENT:
-                myFaultString = "Only hands, please.";
+                myFaultStringEN = "Only hands, please.";
                 myFaultStringNL = "Alleen je hand alsjeblieft.";
                 myFaultStringDE = "Bitte ausschließlich die Hände verwenden.";
                 break;
             
             case FAULT_TOO_MANY_HANDS:
-                myFaultString = "Just one hand at a time, please.";
+                myFaultStringEN = "Just one hand at a time, please.";
                 myFaultStringNL = "Een hand tegelijk alsjeblieft.";
                 myFaultStringDE = "Bitte jeweils immer nur eine einzelne Hand.";
                 break;
             
             case FAULT_HAND_TOO_FAST:
-                myFaultString = "Try moving more slowly.";
+                myFaultStringEN = "Try moving more slowly.";
                 myFaultStringNL = "Probeer langzamer te bewegen.";
                 myFaultStringDE = "Versuche, die Bewegung langsamer auszuführen.";
                 break;
             
             case FAULT_HAND_TOO_HIGH:
-                myFaultString = "Your hand is too high up.";
+                myFaultStringEN = "Your hand is too high up.";
                 myFaultStringNL = "Je houdt je hand te hoog.";
                 myFaultStringDE = "Deine Hand ist zu weit oben.";
                 break;
              
             case FAULT_HAND_TOO_CURLED:
-                myFaultString = "Try keeping your hand flat.";
+                myFaultStringEN = "Try keeping your hand flat.";
                 myFaultStringNL = "Probeer je hand recht te houden.";
                 myFaultStringDE = "Die Hand bitte möglichst flach halten.";
                 break;
                 
             case FAULT_HAND_TOO_VERTICAL:
-                myFaultString = "Try keeping your hand flat.";
+                myFaultStringEN = "Try keeping your hand flat.";
                 myFaultStringNL = "Probeer je hand recht te houden.";
                 myFaultStringDE = "Die Hand bitte möglichst flach halten.";
                 break;
                 
             case FAULT_HAND_NOT_DEEP_ENOUGH:
                 // TODO: need text for hand not deep enough
-                myFaultString = "";
+                myFaultStringEN = "";
                 myFaultStringNL = "";
                 break;
                 
             case FAULT_NO_LEAP_HAND_TOO_SMALL:
-                myFaultString = "I'm sorry! Your hand might be too small :(";
+                myFaultStringEN = "I'm sorry! Your hand might be too small :(";
                 myFaultStringNL = "Het spijt me! Je hand is waarschijnlijk te klein voor mij :(";
                 myFaultStringDE = "Es tut mir leid, deine Hand ist vielleicht zu klein. :(";
                 break;
             
             case FAULT_SAME_SCENE_TOO_LONG:
-                myFaultString = "Touch the screen for a new scene";
+                myFaultStringEN = "Touch the screen for a new scene";
                 myFaultStringNL = "Raak het scherm aan voor een nieuwe scene";
                 myFaultStringDE = "Bitte den Bildschirm berühren um neu zu starten.";
                 break;
@@ -332,9 +333,9 @@ void AppFaultManager::drawFaultHelpScreen(){
     }
     
     // update alpha
-    if(showFaultMode == 1 && fontAlpha < 1){
+    if (showFaultMode == 1 && fontAlpha < 1){
         fontAlpha += .1;
-    }else if( showFaultMode == 2 && fontAlpha > 0){
+    } else if( showFaultMode == 2 && fontAlpha > 0){
         fontAlpha -= .1;
     }
     
@@ -347,25 +348,31 @@ void AppFaultManager::drawFaultHelpScreen(){
         ofPopStyle();
     }
     
-    // draw to screen
-    float stringWidth =  font.stringWidth(myFaultString);
-    
-    ofSetColor(255,255*powf(fontAlpha,1.5));
     ofPushMatrix();
-        ofTranslate(50, ofGetHeight()/2+stringWidth/2.0);
-        ofRotate(-90);
-        font.drawString(myFaultString, 0,0);
+    ofTranslate(px, py);
+    
+        // draw English to screen
+        float stringWidth;
+        stringWidth =  font.stringWidth(myFaultStringEN);
+        ofSetColor(255,255*powf(fontAlpha,1.5));
+        ofPushMatrix();
+            ofTranslate(50, ph/2+stringWidth/2.0);
+            ofRotate(-90);
+            font.drawString(myFaultStringEN, 0,0);
+        ofPopMatrix();
+    
+        // draw 2nd Language to screen
+        if (bUseAdditionalLanguage){
+            stringWidth =  font.stringWidth(myFaultStringDE);
+            ofSetColor(255,255*powf(fontAlpha,.75));
+            ofPushMatrix();
+            ofTranslate(100, ph/2+stringWidth/2.0);
+            ofRotate(-90);
+            font.drawString(myFaultStringDE, 0,0);
+            ofPopMatrix();
+        }
+    
     ofPopMatrix();
-    
-    stringWidth =  font.stringWidth(myFaultStringDE);
-    
-    ofSetColor(255,255*powf(fontAlpha,.75));
-    ofPushMatrix();
-    ofTranslate(100, ofGetHeight()/2+stringWidth/2.0);
-    ofRotate(-90);
-    font.drawString(myFaultStringDE, 0,0);
-    ofPopMatrix();
-    
     
 }
 

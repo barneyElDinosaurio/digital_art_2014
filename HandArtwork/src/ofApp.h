@@ -152,6 +152,7 @@ class ofApp : public ofBaseApp{
 	ofEasyCam				cam;
     ofFbo					leapDiagnosticFbo;
 	ofFbo					leapColorFbo;
+    
 	
     bool	bInPlaybackMode;
     bool	bRecording;
@@ -214,12 +215,19 @@ class ofApp : public ofBaseApp{
     void drawMeshBuilderWireframe();
     void drawGradientOverlay();
     void drawIdleContour();
+    void drawMainPuppetView (bool bEverythingIsAwesome, float px, float py, float pscale1, float pscale2);
     void huntForBlendFunc (int period, int defaultSid, int defaultDid);
     bool useCorrectedCam();
 	
-
-	
-	
+    //------------------------------
+    // Management of multiple displays (July 2015)
+    void initializeScreens();
+    int numActiveDisplays;
+    int touchscreenW;
+    int touchscreenH;
+    int otherscreenW;
+    int otherscreenH;
+    ofFbo puppetDisplayFbo;
 	
 	//-------------------------------
 	

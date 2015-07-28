@@ -106,17 +106,17 @@ void ofApp::setup(){
     bUseCorrectedCamera			= true;
     bDrawLeapWorld              = true;
     bShowText					= false;
-    bDrawMiniImages             = false;
+    bDrawMiniImages             = true;
     bDrawSmallCameraView        = true;
 	bDrawImageInBackground		= true;
-	bDrawContourAnalyzer		= false;
+	bDrawContourAnalyzer		= true;
     bDrawAppFaultDebugText      = false;
 	bComputeAndDisplayPuppet	= true;
 	bFullscreen					= true;
 	bComputePixelBasedFrameDifferencing = false;
 	bDoCompositeThresholdedImageWithLeapFboPixels = false;
 	bDrawGradient               = true;
-	bKioskMode                  = true;
+	bKioskMode                  = false;
     bInIdleMode                 = true;
     bInIdleModePrev             = false;
 	bUseBothTypesOfScenes		= true;
@@ -141,6 +141,7 @@ void ofApp::setup(){
 
 	leapColorFbo.allocate		(imgW,imgH, GL_RGBA);
     leapDiagnosticFbo.allocate	(imgW,imgH, GL_RGB);
+    puppetDisplayFbo.allocate   (1024, 768, GL_RGB);
 
 	
     folderName = ofGetTimestampString();
@@ -158,7 +159,11 @@ void ofApp::setup(){
     
     string versionDisplay = "Using openFrameworks version: " + ofToString( ofGetVersionInfo());
 	cout << versionDisplay;
-	
+    
+    //-------------------------------------------
+    // Display settings
+    initializeScreens();
+
 	
 	//-------------------------------------------
 	bUseRedChannelForLuminance	= true;
@@ -247,7 +252,7 @@ void ofApp::setup(){
 	
 	
 	// Get us ready to demo in a hurry
-	string filePathCalib = "2015-april-15-CALIBRATION";
+	string filePathCalib = "2015-july-13-CALIBRATION";
         // Previously:
         // "oct-8-CALIBRATION";
         // "calib_chris_corrected_4";
@@ -295,18 +300,61 @@ void ofApp::setup(){
     // APPLICATION FAULT MANAGER
     appFaultManager.setup();
     minHandInsertionPercent = 0.29;
-    maxAllowableMotion		= 15.5;
-    maxAllowableFingerCurl	= 0.48;
-    maxAllowableExtentZ		= 0.55;
-    maxAllowableHeightZ     = 2.05;
+    maxAllowableMotion		= 15.0;
+    maxAllowableFingerCurl	= 0.51;
+    maxAllowableExtentZ		= 0.68;
+    maxAllowableHeightZ     = 3.25;
 	
     //--------------
 	// MUST BE LAST IN SETUP()
 	setupGui();
-    keyPressed('g');
-    ofHideCursor();
+    keyPressed('k');
 }
 
+
+//--------------------------------------------------------------
+void ofApp::initializeScreens(){
+    
+    // Get screen widths and heights from Quartz Services
+    // See https://developer.apple.com/library/mac/documentation/GraphicsImaging/Reference/Quartz_Services_Ref/index.html
+    // See http://forum.openframeworks.cc/t/dual-monitor-full-screen/13654/10
+    
+    CGDisplayCount displayCount;
+    CGDirectDisplayID displays[32];
+    
+    // Grab the active displays
+    CGGetActiveDisplayList (32, displays, &displayCount);
+    numActiveDisplays = (int) displayCount;
+    printf ("----------------------\n");
+    printf ("numActiveDisplays = %d\n", numActiveDisplays);
+    for (int i=0; i<numActiveDisplays; i++){
+        int displayWidth  = CGDisplayPixelsWide ( displays[i] );
+        int displayHeight = CGDisplayPixelsHigh ( displays[i] );
+        printf ("   Display %d: (%d, %d)\n", i, displayWidth, displayHeight);
+    }
+    
+    touchscreenW = 1024;
+    touchscreenH = 768;
+    otherscreenW = 0;
+    otherscreenH = 0;
+    if (numActiveDisplays > 1){
+        // figure out which one is the touchscreen
+        int touchscreenId = 1; // a guess.
+        int otherScreenId = 0; // a guess.
+        for (int i=0; i<numActiveDisplays; i++){
+            if (CGDisplayPixelsWide ( displays[i] ) == touchscreenW){
+                touchscreenId = i;
+                otherScreenId = 1-i;
+            }
+        }
+        touchscreenW = CGDisplayPixelsWide ( displays[touchscreenId] );
+        touchscreenH = CGDisplayPixelsHigh ( displays[touchscreenId] );
+        
+        otherscreenW = CGDisplayPixelsWide ( displays[otherScreenId] );
+        otherscreenH = CGDisplayPixelsHigh ( displays[otherScreenId] );
+    }
+    printf ("----------------------\n");
+}
 
 
 //--------------------------------------------------------------
@@ -480,7 +528,7 @@ void ofApp::setupGui() {
 	gui2->addSlider("crotchContourSearchMask", 0.0, 0.5,    &(myHandContourAnalyzer.crotchContourSearchTukeyMaskPct));
     
     gui2->addSpacer();
-    gui2->addSlider("minCrotchQuality", 0.0, 0.30,			&(myHandContourAnalyzer.minCrotchQuality));
+    gui2->addSlider("minCrotchQuality", 0.0, 0.40,			&(myHandContourAnalyzer.minCrotchQuality));
     gui2->addSlider("malorientationSuppression", 0.0, 1.0,	&(myHandContourAnalyzer.malorientationSuppression));
 	
 	gui2->autoSizeToFitWidgets();
@@ -533,18 +581,13 @@ void ofApp::setupGui() {
     gui4->addSlider("puppetDisplayScale", 0.5, 2.0,     &puppetDisplayScale); // slider
     
     gui4->addSpacer();
-    gui4->addLabelToggle("bDrawLeapWorld",              &bDrawLeapWorld,                false, true);
-    gui4->addLabelToggle("bDrawSmallCameraView",        &bDrawSmallCameraView,          false, true);
     gui4->addLabelToggle("bDrawMeshBuilderWireframe",   &bDrawMeshBuilderWireframe,     false, true);
-    gui4->addLabelToggle("bDrawMiniImages",             &bDrawMiniImages,               false, true);
     gui4->addLabelToggle("bShowText",                   &bShowText,                     false, true);
     gui4->addLabelToggle("bDrawAppFaultDebugText",      &bDrawAppFaultDebugText,        false, true);
     gui4->addLabelToggle("bDrawGradientOverlay",		&bDrawGradient,					false, true);
 	gui4->addLabelToggle("bDrawFaultFeedback",			&bDrawFaultFeedback,			false, true);
 
     gui4->addSpacer();
-    gui4->addLabelToggle("bDrawContourAnalyzer",        &bDrawContourAnalyzer,          false, true);
-
     vector<string> vnames;
     vnames.push_back("grayMat");
     vnames.push_back("thresholded");
@@ -563,9 +606,7 @@ void ofApp::setupGui() {
     guiTabBar->addCanvas(gui4);
     guis.push_back(gui4);
     
-    
-   
-
+    guiTabBar->setVisible(!bKioskMode);
 }
 
 
@@ -1072,7 +1113,7 @@ void ofApp::computeFrameDifferencing(){
 //--------------------------------------------------------------
 void ofApp::thresholdLuminanceImage(){
 	
-	if (bDoAdaptiveThresholding){
+	if (bDoAdaptiveThresholding){ // presently false.
 		
 		// Copy the gray image to a very small version, which is faster to operate on;
 		cv::Size blurredSmallSize = cv::Size(imgW/4, imgH/4);
@@ -1202,6 +1243,8 @@ void ofApp::computeHandStatistics(){
 	}
 }
 
+
+
 //--------------------------------------------------------------
 void ofApp::renderDiagnosticLeapFboAndExtractItsPixelData(){
 	
@@ -1301,7 +1344,7 @@ void ofApp::compositeThresholdedImageWithLeapFboPixels(){
 	cv::flip (leapDiagnosticFboMat, leapDiagnosticFboMat, 0);
 	*/
 	
-	if (bDoCompositeThresholdedImageWithLeapFboPixels){
+	if (bDoCompositeThresholdedImageWithLeapFboPixels){ // presently false!
 		// Composite the colored orientation image (in leapFboMat) against
 		// the thresholdedFinal (in an RGBfied version), to produce the coloredBinarizedImg.
 		
@@ -1340,7 +1383,6 @@ void ofApp::draw(){
 	// set puppet or topology modifier gui visibility
     if(guiTabBar->isVisible()) {
 		
-		
 		if (bUseBothTypesOfScenes){
             
 			if (currentSceneID < nTopoScenes){
@@ -1371,10 +1413,14 @@ void ofApp::draw(){
 
 	
 
-    if (bDrawLeapWorld){
+
+    
+    
+    if (!bKioskMode){
         drawLeapWorld();
-    }
-    if (bDrawSmallCameraView){
+        drawDiagnosticMiniImages();
+        drawContourAnalyzer();
+        
         if (!bInPlaybackMode){
             drawLiveForRecording();
         } else {
@@ -1385,8 +1431,23 @@ void ofApp::draw(){
                 drawCrosshairMouseCursor();
             }
         }
+        
+        // Diagnostics
+        if (bDrawMeshBuilderWireframe){
+            drawMeshBuilderWireframe();
+        }
+        if (bShowText){
+            drawText();
+        }
     }
-
+    if (!bKioskMode){
+        ofShowCursor();
+    } else {
+        ofHideCursor();
+    }
+    
+    
+    
     
     
 
@@ -1394,173 +1455,67 @@ void ofApp::draw(){
 	// 2. COMPUTE AND DISPLAY PUPPET
 	if (bComputeAndDisplayPuppet){
         
-        ofPushStyle();
-        ofPushMatrix();
-		ofSetColor(255,255,255);
-        
+        // Determine if all systems are go.
         bool bEverythingIsAwesome = false;
         bool bCalculatedMesh = bSuccessfullyBuiltMesh; //myHandMeshBuilder.bCalculatedMesh;
-        
         bool bMeshesAreProbablyOK = true;
         if (bEnableAppFaultManager){
-            bMeshesAreProbablyOK =
-                (appFaultManager.doCurrentFaultsIndicateLikelihoodOfBadMeshes() == false);
+            bMeshesAreProbablyOK = (appFaultManager.doCurrentFaultsIndicateLikelihoodOfBadMeshes() == false);
         }
-	
         bEverythingIsAwesome = bCalculatedMesh && bMeshesAreProbablyOK;
-        
-        // quick hack so live video does not show in idle mode
-        if( bKioskMode && bInIdleMode){
+        if (bKioskMode && bInIdleMode){
+            // 'Hack' so that live video does not show in idle mode
             bEverythingIsAwesome = false;
         }
-    
+        
+        // If it's time to export the camera, do so.
         if (bEverythingIsAwesome){
-            
-            if(exportTimer.tick()) {
+            if (exportTimer.tick()) {
                 string filename = "continuous/" + ofGetTimestampString();
                 exportFrame(filename);
             }
-            
-            // ALL GOOD! SHOW THE PUPPET!
-            //
-			// Before we show the puppet, however, show an image in the background if desired.
-			if (bDrawImageInBackground){
-                ofPushStyle();
-				ofPushMatrix();
-                    float bgScale = puppetDisplayScale * 1.0;
-                    float ox = ofGetWindowWidth()      - cameraWidth*bgScale;
-                    float oy = ofGetWindowHeight()/2.0 - cameraHeight*bgScale/2.0;
-                    ofTranslate( ox, oy, 0);
-                    ofScale (bgScale, bgScale);
-                    ofSetColor(255);
-                    backgroundImage.draw(0,0, 1024,768);
-				ofPopMatrix();
-                ofPopStyle();
-			}
-			
-            // Position the right edge of the puppet at the right edge of the window.
-            // We also scale up the puppet image to the optimal display size here.
-            float renderScale = puppetDisplayScale * ((bWorkAtHalfScale) ? 2 : 1);
-            float puppetOffsetX = ofGetWindowWidth() - imgW*renderScale;
-            float puppetOffsetY = ofGetWindowHeight()/2.0 - imgH*renderScale/2.0;
-            ofTranslate( puppetOffsetX, puppetOffsetY, 0);
-            ofScale (renderScale,renderScale);
-			
-			// Get the texture from the camera or the stored video, depending on the playback mode.
-            ofTexture &handImageTexture = (bInPlaybackMode) ?
-					(video.getTextureReference()) :
-					(processFrameImg.getTextureReference());
-			
-			
-			if (bUseBothTypesOfScenes){
-				// mix topo and regular.
-				if (currentSceneID < nTopoScenes){
-					bUseTopologyModifierManager = true;
-					myTopologyModifierManager.draw(handImageTexture);
-				} else {
-					bUseTopologyModifierManager = false;
-					myPuppetManager.drawPuppet(bComputeAndDisplayPuppet, handImageTexture);
-				}
-				
-			} else {
-				// We're selecting between topo and regular.
-				if (bUseTopologyModifierManager) {
-					myTopologyModifierManager.draw (handImageTexture);
-				} else {
-					// Draw the puppet.
-					myPuppetManager.drawPuppet (bComputeAndDisplayPuppet, handImageTexture);
-				}
-			}
-
-        } else {
-            
-            // THE PUPPET IS FAULTY :(
-            // SO ONLY SHOW THE VIDEO/CAMERA.
-			
-			if (bDrawImageInBackground){
-				
-				// In this instance, we show the live, unmasked, unaltered camera image.
-				// We show it at full (1024x768) resolution, and we include its own natural background.
-				// Note: the image needs to be scaled by puppetscale, or else there is scale-flipping.
-				//
-				
-                if (bInIdleMode && bKioskMode){
-					
-					ofPushMatrix();
-					float bgScale = puppetDisplayScale * ((bWorkAtHalfScale) ? 2.0 : 1.0);
-					float ox = ofGetWindowWidth()      - imgW*bgScale;
-					float oy = ofGetWindowHeight()/2.0 - imgH*bgScale/2.0;
-					ofTranslate( ox, oy, 0);
-					ofScale (bgScale, bgScale);
-					
-                    drawIdleContour();
-					ofPopMatrix();
-					 
-					
-                } else {
-					ofPushMatrix();
-					float bgScale = puppetDisplayScale * 1.0;
-					float ox = ofGetWindowWidth()      - cameraWidth*bgScale;
-					float oy = ofGetWindowHeight()/2.0 - cameraHeight*bgScale/2.0;
-					ofTranslate( ox, oy, 0);
-					ofScale (bgScale, bgScale);
-                    ofSetColor(255,255,255);
-					
-                    colorVideo.draw(0,0, 1024,768);
-					ofPopMatrix();
-                }
-				
-				
-                
-                
-			} else {
-				
-				// We're not drawing an image in the background;
-				// instead, we'll show the synthetic black background, and
-				// (on top of it) the masked image of the live video hand.
-            
-				// We'll use the camera/video version at 512x384 resolution.
-				// (Masking the 1024 version threw memory errors, and it had a crappy edge anyway.)
-				// Composite the colored camera/video image (in videoMat) against
-				// the thresholdedFinal (in an RGBfied version), to produce the maskedCamVidImg.
-				//
-				thresholdedFinalThrice[0] = thresholdedFinal;
-				thresholdedFinalThrice[1] = thresholdedFinal;
-				thresholdedFinalThrice[2] = thresholdedFinal;
-				cv::merge(thresholdedFinalThrice, 3, thresholdedFinal8UC3);
-				cv::bitwise_and(videoMat, thresholdedFinal8UC3, maskedCamVidImg);
-				// if (bInPlaybackMode)
-				
-				float renderScale = puppetDisplayScale * 2.0;
-				float puppetOffsetX = ofGetWindowWidth() - imgW*renderScale;
-				float puppetOffsetY = ofGetWindowHeight()/2.0 - imgH*renderScale/2.0;
-				ofTranslate( puppetOffsetX, puppetOffsetY, 0);
-				ofScale (renderScale,renderScale);
-				ofSetColor(255,255,255);
-				drawMat(maskedCamVidImg, 0,0);
-				
-			}
-            
         }
+    
         
-        ofPopMatrix();
-        ofPopStyle();
- 
+        // Compute the coordinates to display the puppet.
+        float puppetScale1 = puppetDisplayScale * 1.0;
+        float puppetScale2 = puppetDisplayScale * 2.0;
+        float puppetOffsetX = touchscreenW - cameraWidth*puppetScale1;
+        float puppetOffsetY = touchscreenH - cameraHeight*puppetScale1;
+        
+        // Capture the final display into an FBO.
+        puppetDisplayFbo.begin();
+            ofPushStyle();
+            ofPushMatrix();
+            ofClear(0,0,0,255);
+            ofSetColor(255,255,255);
+            drawMainPuppetView (bEverythingIsAwesome, puppetOffsetX, puppetOffsetY, puppetScale1, puppetScale2);
+            if( bDrawGradient ) drawGradientOverlay();
+            ofPopMatrix();
+            ofPopStyle();
+        puppetDisplayFbo.end();
+        
+        // Render the final display's FBO on the touchscreen
+        ofSetColor(255,255,255);
+        puppetDisplayFbo.draw(otherscreenW,0, touchscreenW,touchscreenH);
+        
+        // Now also draw that FBO on the "other" (projection) screen, if we're in kiosk mode.
+        if (numActiveDisplays > 1){
+            if (bKioskMode == true){
+                ofPushMatrix();
+                float ratio1080to1024 = (float)otherscreenH / (float) touchscreenW;
+                ofScale (ratio1080to1024, ratio1080to1024);
+                ofTranslate(otherscreenW/2.0, 0);
+                ofRotate(90);
+                ofTranslate(0, -touchscreenH/2.0);
+                ofSetColor(255,255,255);
+                puppetDisplayFbo.draw(0,0, touchscreenW,touchscreenH);
+                ofPopMatrix();
+            }
+        }
 	}
 
-    // Diagnostics
-    if (bDrawMeshBuilderWireframe){
-        drawMeshBuilderWireframe();
-    }
-    if (bShowText){
-		drawText();
-    }
-    if (bDrawMiniImages) {
-        drawDiagnosticMiniImages();
-    }
-    if (bDrawContourAnalyzer){
-        drawContourAnalyzer();
-    }
+    
     
     //-----------------------------------
     // 3. DISPLAY FEEDBACK TO USER:
@@ -1578,13 +1533,137 @@ void ofApp::draw(){
             // shows all active faults as debug text
         }
         if (bDrawFaultFeedback){
-            appFaultManager.drawFaultHelpScreen();
+            float px = 0;
+            float py = 0;
+            float ph = ofGetHeight();
+            if (numActiveDisplays > 1){
+                px = otherscreenW;
+                py = 0;
+                ph = touchscreenH;
+            }
+            appFaultManager.drawFaultHelpScreen(px, py, ph);
         }
     }
 	
 		
-	if( bDrawGradient ) drawGradientOverlay();
-	updateDataSampleGrabbingProcess();
+    updateDataSampleGrabbingProcess();
+}
+
+
+//--------------------------------------------------------------
+void ofApp::drawMainPuppetView (bool bEverythingIsAwesome,
+                                float puppetOffsetX, float puppetOffsetY,
+                                float puppetScale1, float puppetScale2){
+    
+    ofPushMatrix();
+    
+    if (bEverythingIsAwesome){
+        // ALL GOOD! SHOW THE PUPPET!
+
+        // Before rendering the puppet, show an image in the background if desired.
+        if (bDrawImageInBackground){
+            ofPushStyle();
+            ofPushMatrix();
+            ofTranslate( puppetOffsetX, puppetOffsetY, 0);
+            ofScale (puppetScale1, puppetScale1);
+            ofSetColor(255);
+            backgroundImage.draw(0,0, 1024,768);
+            ofPopMatrix();
+            ofPopStyle();
+        }
+        
+        // Position the right edge of the puppet at the right edge of the window.
+        // We also scale up the puppet image to the optimal display size here.
+        ofPushMatrix(); {
+            ofTranslate( puppetOffsetX, puppetOffsetY, 0);
+            ofScale (puppetScale2,puppetScale2);
+            
+            // Get the texture from the camera or the stored video, depending on the playback mode.
+            ofTexture &handImageTexture = (bInPlaybackMode) ?
+            (video.getTextureReference()) :
+            (processFrameImg.getTextureReference());
+            
+            if (bUseBothTypesOfScenes){
+                // mix topo and regular.
+                int nTopoScenes = myTopologyModifierManager.getSceneCount();
+                if (currentSceneID < nTopoScenes){
+                    bUseTopologyModifierManager = true;
+                    myTopologyModifierManager.draw(handImageTexture);
+                } else {
+                    bUseTopologyModifierManager = false;
+                    myPuppetManager.drawPuppet(bComputeAndDisplayPuppet, handImageTexture);
+                }
+                
+            } else {
+                // We're selecting between topo and regular.
+                if (bUseTopologyModifierManager) {
+                    myTopologyModifierManager.draw (handImageTexture);
+                } else {
+                    // Draw the puppet.
+                    myPuppetManager.drawPuppet (bComputeAndDisplayPuppet, handImageTexture);
+                }
+            }
+        }
+        ofPopMatrix();
+        
+    } else {
+        
+        // THE PUPPET IS FAULTY :(
+        // SO ONLY SHOW THE VIDEO/CAMERA.
+        
+        if (bDrawImageInBackground){
+            
+            // In this instance, we show the live, unmasked, unaltered camera image.
+            // We show it at full (1024x768) resolution, and we include its own natural background.
+            // Note: the image needs to be scaled by puppetscale, or else there is scale-flipping.
+            //
+            
+            if (bInIdleMode && bKioskMode){
+                ofPushMatrix();
+                ofTranslate( puppetOffsetX, puppetOffsetY, 0);
+                ofScale (puppetScale2, puppetScale2);
+                drawIdleContour();
+                ofPopMatrix();
+                
+            } else {
+                ofPushMatrix();
+                ofTranslate( puppetOffsetX, puppetOffsetY, 0);
+                ofScale (puppetScale1, puppetScale1);
+                ofSetColor(255,255,255);
+                colorVideo.draw(0,0, 1024,768);
+                ofPopMatrix();
+            }
+            
+            
+        } else {
+            
+            // We're not drawing an image in the background;
+            // instead, we'll show the synthetic black background, and
+            // (on top of it) the masked image of the live video hand.
+            
+            // We'll use the camera/video version at 512x384 resolution.
+            // (Masking the 1024 version threw memory errors, and it had a crappy edge anyway.)
+            // Composite the colored camera/video image (in videoMat) against
+            // the thresholdedFinal (in an RGBfied version), to produce the maskedCamVidImg.
+            //
+            thresholdedFinalThrice[0] = thresholdedFinal;
+            thresholdedFinalThrice[1] = thresholdedFinal;
+            thresholdedFinalThrice[2] = thresholdedFinal;
+            cv::merge(thresholdedFinalThrice, 3, thresholdedFinal8UC3);
+            cv::bitwise_and(videoMat, thresholdedFinal8UC3, maskedCamVidImg);
+            
+            ofPushMatrix();
+            ofTranslate( puppetOffsetX, puppetOffsetY, 0);
+            ofScale (puppetScale2,puppetScale2);
+            ofSetColor(255,255,255);
+            drawMat(maskedCamVidImg, 0,0);
+            ofPopMatrix();
+            
+        }
+        
+    }
+
+    ofPopMatrix();
 }
 
 
@@ -1664,22 +1743,24 @@ void ofApp::drawCrosshairMouseCursor(){
 void ofApp::drawDiagnosticMiniImages(){
     
     ofPushMatrix();
-    float miniScale = 0.15;
+    float miniScale = 0.35;
     ofTranslate(0, ofGetHeight() - (miniScale * imgH));
     ofScale(miniScale, miniScale);
     
     int xItem = 0;
     ofSetColor(ofColor::white);
-    drawMat(grayMat,				imgW * xItem, 0); xItem++;
-    drawMat(thresholded,			imgW * xItem, 0); xItem++;
-    drawMat(adaptiveThreshImg,		imgW * xItem, 0); xItem++;
-    drawMat(thresholdedFinal,		imgW * xItem, 0); xItem++;
-    drawMat(leapDiagnosticFboMat,	imgW * xItem, 0); xItem++;
-    drawMat(coloredBinarizedImg,	imgW * xItem, 0); xItem++;
+    
+    drawMat(grayMat,                        imgW * xItem, 0); xItem++;
+    drawMat(thresholded,                    imgW * xItem, 0); xItem++;
+    drawMat(thresholdedFinal,               imgW * xItem, 0); xItem++;
+    drawMat(myHandContourAnalyzer.edgeMat,	imgW * xItem, 0); xItem++;
+    drawMat(leapDiagnosticFboMat,           imgW * xItem, 0); xItem++;
+    
+    string imageName[] = {"grayMat", "thresholded", "thresholdedFinal", "edgeMat", "leapDiagnosticFboMat"};
     
     ofSetColor(ofColor::orange);
-    for (int i=0; i<6; i++){
-        ofDrawBitmapString( ofToString(i+1), imgW*i +5, 15/miniScale);
+    for (int i=0; i<xItem; i++){
+        ofDrawBitmapString( ofToString(i+1) + " " + ofToString(imageName[i]), imgW*i+10, 15/miniScale);
     }
     
     ofPopMatrix();
@@ -1691,9 +1772,11 @@ void ofApp::drawContourAnalyzer(){
     
     // Draw the contour analyzer and associated CV images.
 
-    float contourAnalyzerRenderScale = (bShowContourAnalyzerBig) ? 2.0 : 1.0;
-    float insetX = (ofGetWidth() - contourAnalyzerRenderScale*imgW);
-    float insetY = (ofGetHeight()- contourAnalyzerRenderScale*imgH);
+    float contourAnalyzerRenderScale = 2.0;
+    float sW = (numActiveDisplays > 1) ? otherscreenW : ofGetWidth();
+    float sH = (numActiveDisplays > 1) ? otherscreenH : ofGetHeight();
+    float insetX = sW - contourAnalyzerRenderScale*imgW;
+    float insetY = sH - contourAnalyzerRenderScale*imgH;
     
     ofPushMatrix();
     ofPushStyle();
@@ -2181,8 +2264,16 @@ void ofApp::drawText(){
 //--------------------------------------------------------------
 void ofApp::drawGradientOverlay(){
     
+    /* // old, pre-fbo
+    // Defaults here assume ofGetWidth() == 1024.
+    // This is not so if we have two screens,
+    // in which case ofGetWidth() is probably 1920+1024.
+    //
     int offSet = 50;
     int boxSize = (ofGetWidth()*0.25)+offSet;
+    if (numActiveDisplays > 1){
+        boxSize = (1024*0.25)+offSet;
+    }
     
     ofFill();
     ofSetColor(0,255);
@@ -2197,6 +2288,27 @@ void ofApp::drawGradientOverlay(){
     glColor4f(0,0,0,0);
     glVertex2f(ofGetWidth()-boxSize,ofGetHeight());
     glEnd();
+    */
+    
+
+    
+    int offSet = 50;
+    int boxSize = (int)(touchscreenW*0.25)+offSet;
+    
+    ofFill();
+    ofSetColor(0,255);
+    ofRect(touchscreenW-offSet,0,offSet,touchscreenH);
+    
+    glBegin(GL_QUADS);
+    glColor4f(0,0,0,0);
+    glVertex2f(touchscreenW-boxSize,0);
+    glColor4f(0,0,0,1);
+    glVertex2f(touchscreenW-offSet,0);
+    glVertex2f(touchscreenW-offSet,touchscreenH);
+    glColor4f(0,0,0,0);
+    glVertex2f(touchscreenW-boxSize,touchscreenH);
+    glEnd();
+    
     
 }
 
@@ -2384,9 +2496,11 @@ void ofApp::keyPressed(int key){
             break;
 			
 		case '<':
+        case ',':
 			prevScene();
 			break;
 		case '>':
+        case '.':
 			nextScene();
 			break;
 			
@@ -2397,16 +2511,7 @@ void ofApp::keyPressed(int key){
             calibrateFromXML(folderName);
             break;
 
-        case 'g':
-		case 'G':
-			guiTabBar->toggleVisible();
-			myPuppetManager.setGuiVisibility( guiTabBar->isVisible());
-			if (guiTabBar->isVisible()){
-				ofShowCursor();
-			} else {
-				ofHideCursor();
-			}
-			break;
+        
 			
         case 'l':
             bInPlaybackMode = !bInPlaybackMode;
@@ -2459,23 +2564,26 @@ void ofApp::keyPressed(int key){
         case '}':
 			framesBackToPlay = (framesBackToPlay+maxNPrevLeapFrames +1)%maxNPrevLeapFrames;
             break;
-		case '.':
-			bShowContourAnalyzerBig = !bShowContourAnalyzerBig;
-			break;
-		case ',':
-			bDrawContourAnalyzer = !bDrawContourAnalyzer;
-			break;
 			
 		case 'k':
 		case 'K':
             bKioskMode = !bKioskMode;
+            guiTabBar->setVisible(!bKioskMode);
+            myPuppetManager.setGuiVisibility(!bKioskMode);
+                                             
             if(!bKioskMode){
                 myPuppetManager.bInIdleMode = false;
                 bInIdleMode = false;
             }
             break;
         
-		
+            
+            
+            
+            
+            
+            
+            
 		/*
 		 // Deprecated key commands: keypress commands that are on the way out.
 		 //
@@ -2521,6 +2629,13 @@ void ofApp::mousePressed(int x, int y, int button){
     
     if (bKioskMode){
         int dir = previousDir;
+        dir = +1;
+        changeScene(dir);
+        previousDir = dir;
+        
+        // older code doesn't use multi-screens yet, but allows forward//backward navigation.
+        /*
+        int dir = previousDir;
         if(y < ofGetWidth() / 3) {
             dir = -1;
         } else if(y > 2 * ofGetWidth() / 3) {
@@ -2528,6 +2643,7 @@ void ofApp::mousePressed(int x, int y, int button){
         }
         changeScene(dir);
         previousDir = dir;
+         */
     }
 }
 

@@ -45,7 +45,7 @@ void HandContourAnalyzer::setup(int w, int h){
 		crotchQuality[i] = 0;
 	}
     
-    minCrotchQuality = 0.18;
+    minCrotchQuality = 0.37;
     malorientationSuppression = 0.75;
    
     edgeMat.create                      (imgH, imgW, CV_8UC1);
@@ -60,12 +60,12 @@ void HandContourAnalyzer::setup(int w, int h){
     
     thresholdConstMat.setTo( (unsigned char) ((int)10));
     
-    blurKernelSize				= 6.75;
+    thresholdValue				= 26.0;
+    blurKernelSize				= 6.00;
     blurredStrengthWeight		= 0.99;
-    thresholdValue				= 38.0;
-    prevThresholdValue			= 0;
-	lineBelongingTolerance		= 13.0;
+	lineBelongingTolerance		= 7.00;
 	perpendicularSearch			= 0.40;
+    prevThresholdValue			= 0;
     handmarkBlur                = 0.5;
 	
 	
