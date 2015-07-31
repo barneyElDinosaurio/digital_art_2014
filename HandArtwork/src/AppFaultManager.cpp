@@ -67,7 +67,7 @@ void AppFaultManager::setup(){
     timeStartShowFault = 0.f;
     showFaultMode = 0;
     minTimeOn = 6;
-    bUseAdditionalLanguage = false;
+    bUseAdditionalLanguage = true;
 
 }
 

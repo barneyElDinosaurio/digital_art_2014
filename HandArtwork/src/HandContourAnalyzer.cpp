@@ -149,13 +149,15 @@ bool HandContourAnalyzer::refineCrotches (LeapVisualizer &lv,
         bool bDrawDebug = true;
         
         //------------------------------
-        // Compute the "perfect ray": from the crotch to the midpoint between knuckles
+        // Compute the "perfect ray": from the currently-detected
+        // (unrefined) crotch, to the midpoint between knuckles
+        //
         vector<PerfectRay> perfectRays;
         perfectRays.clear();
 		
         for (int i=0; i<nCrotches; i++){
-            int whichCrotch = 3-i; // yeah, I know
-            if (crotchQuality[whichCrotch] < minCrotchQuality){ // true) { /////
+            int whichCrotch = 3-i; // reverse the order; yeah, I know
+            if (crotchQuality[whichCrotch] < minCrotchQuality){
                 
                 int contourIndexOfCrotch = crotchContourIndices[whichCrotch];
                 ofVec3f crotchVec3f = theHandContourResampled[contourIndexOfCrotch];
@@ -183,7 +185,8 @@ bool HandContourAnalyzer::refineCrotches (LeapVisualizer &lv,
                     bool bUseLocalOrientationToEstimateCrotchEnd = true;
                     if (bUseLocalOrientationToEstimateCrotchEnd){
                         
-                        // Get the corresponding pixel in the leapDiagnosticFboMat
+                        // Fetch the pixel at (px,py) in the leapDiagnosticFboMat
+                        // corresponding to the location of the (current) crotch
                         int px = (int)roundf(aPerfectRay.cx);
                         int py = (int)roundf(aPerfectRay.cy);
                         if ((px > 0) && (px < imgW) && (py > 0) && (py < imgH)){
@@ -221,9 +224,17 @@ bool HandContourAnalyzer::refineCrotches (LeapVisualizer &lv,
                                     
                                     // Use the point which is halfway between the mid-knuckle point,
                                     // and the location where the local orientation vector intersects
-                                    // the the segment between the two adjacent knuckles.
-                                    aPerfectRay.kx = (midKnuckleX + intersectionX)/2.0;
-                                    aPerfectRay.ky = (midKnuckleY + intersectionY)/2.0;
+                                    // the segment between the two adjacent knuckles.
+                                    float aPerfectRaykx = (midKnuckleX + intersectionX)/2.0;
+                                    float aPerfectRayky = (midKnuckleY + intersectionY)/2.0;
+                                    
+                                    // Actually (July 2015), it's searching too close to the knuckles.
+                                    // Shorten the search ray.
+                                    float aprA = 0.80;
+                                    float aprB = 1.0 - aprA;
+                                    aPerfectRay.kx = (aprA * aPerfectRaykx) + (aprB * aPerfectRay.cx);
+                                    aPerfectRay.ky = (aprA * aPerfectRayky) + (aprB * aPerfectRay.cy);
+                                    
                                 }
                             }
                         }
@@ -901,7 +912,7 @@ void HandContourAnalyzer::draw(){
 	drawHandmarks();
 	
 	
-	// drawOrientations();
+	//drawOrientations();
 	// drawCrotchCalculations (crotchSearchIndex0, crotchSearchIndex1);
 	// evaluateCrotchQuality();
 	

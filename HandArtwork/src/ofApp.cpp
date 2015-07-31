@@ -333,6 +333,20 @@ void ofApp::initializeScreens(){
         printf ("   Display %d: (%d, %d)\n", i, displayWidth, displayHeight);
     }
     
+    // Screens are assumed to be arranged as follows:
+    /*
+     
+     otherscreen         touchscreen
+     |-------------------+----------+
+     |                   |          |
+     |                   | 1024x768 |
+     |    1920 x 1080    |          |
+     |                   +----------+
+     |                   |
+     +-------------------+
+    
+     */
+    
     touchscreenW = 1024;
     touchscreenH = 768;
     otherscreenW = 0;
@@ -1470,18 +1484,19 @@ void ofApp::draw(){
         
         // If it's time to export the camera, do so.
         if (bEverythingIsAwesome){
-            if (exportTimer.tick()) {
-                string filename = "continuous/" + ofGetTimestampString();
-                exportFrame(filename);
+            if (bDataSampleGrabbingEnabled && !bRecording && !bInPlaybackMode){
+                if (exportTimer.tick()) {
+                    string filename = "continuous/" + ofGetTimestampString();
+                    exportFrame(filename);
+                }
             }
         }
-    
         
         // Compute the coordinates to display the puppet.
         float puppetScale1 = puppetDisplayScale * 1.0;
         float puppetScale2 = puppetDisplayScale * 2.0;
-        float puppetOffsetX = touchscreenW - cameraWidth*puppetScale1;
-        float puppetOffsetY = touchscreenH - cameraHeight*puppetScale1;
+        float puppetOffsetX =  touchscreenW - cameraWidth*puppetScale1;
+        float puppetOffsetY = (touchscreenH - cameraHeight*puppetScale1)/2.0;
         
         // Capture the final display into an FBO.
         puppetDisplayFbo.begin();
@@ -1545,8 +1560,7 @@ void ofApp::draw(){
         }
     }
 	
-		
-    updateDataSampleGrabbingProcess();
+
 }
 
 
@@ -1667,62 +1681,6 @@ void ofApp::drawMainPuppetView (bool bEverythingIsAwesome,
 }
 
 
-
-//--------------------------------------------------------------
-void ofApp::updateDataSampleGrabbingProcess(){
-	if (bDataSampleGrabbingEnabled && !bRecording && !bInPlaybackMode){
-		bool bCalculatedMesh = bSuccessfullyBuiltMesh;
-        
-        bool bMeshesAreProbablyOK = true;
-        if (bEnableAppFaultManager){
-            bMeshesAreProbablyOK = (appFaultManager.doCurrentFaultsIndicateLikelihoodOfBadMeshes() == false);
-        }
-        
-		if (bCalculatedMesh && bMeshesAreProbablyOK){
-        
-            long now = ofGetElapsedTimeMillis();
-            int elapsed = (int)(now - lastDataSampleGrabTimeMillis);
-            if (elapsed >= dataSampleGrabIntervalMillis){
-                
-                string strY = ofToString (ofGetYear());
-                string strN = ofToString (ofGetMonth());
-                string strD = ofToString (ofGetDay());
-                string strH = ofToString (ofGetHours());
-                string strM = ofToString (ofGetMinutes());
-                string strS = ofToString (ofGetSeconds());
-                
-                if (ofGetMonth()   < 10) { strN = "0" + strN; }
-                if (ofGetDay()     < 10) { strD = "0" + strD; }
-                if (ofGetHours()   < 10) { strH = "0" + strH; }
-                if (ofGetMinutes() < 10) { strM = "0" + strM; }
-                if (ofGetSeconds() < 10) { strS = "0" + strS; }
-                
-                string dateString = strY + strN + strD;
-                
-                string filename = "samples/" + dateString + "/sample_";
-                filename += strH;
-                filename += strM;
-                filename += strS;
-                
-                // 1. Record the mesh as a .PLY file.
-                myHandMeshBuilder.getMesh().save(filename + ".ply");
-                
-                // 2. Record the image as a .JPG file.
-                dataSampleImg.setFromPixels( colorVideo.getPixels(), cameraWidth, cameraHeight, OF_IMAGE_COLOR);
-                dataSampleImg.saveImage(filename + ".jpg", OF_IMAGE_QUALITY_HIGH);
-                
-                // 3. Record the LEAP data as an .XML file.
-                leapRecorder.startRecording();
-                leapRecorder.recordFrameXML(leap);
-                leapRecorder.endRecording(filename + ".xml");
-                
-                //bInPlaybackMode
-                lastDataSampleGrabTimeMillis = now;
-            }
-            
-		}
-	}
-}
 
 
 //--------------------------------------------------------------
